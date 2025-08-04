@@ -5,7 +5,6 @@
 
 SDL::SDL() {
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS | SDL_INIT_AUDIO);
-    IMG_Init(IMG_INIT_PNG);
     TTF_Init();
 
     SDL_CreateWindowAndRenderer("new_sdl",
@@ -19,7 +18,6 @@ SDL::~SDL() {
     SDL_DestroyRenderer(m_renderer);
     SDL_DestroyWindow(m_window);
     TTF_Quit();
-    IMG_Quit();
     SDL_Quit();
 }
 

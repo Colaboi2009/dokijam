@@ -5,6 +5,8 @@
 #include <SDL3_image/SDL_image.h>
 #include <cassert>
 
+#include <stdexcept>
+
 Animation::Animation(std::string filepath, float scale) : m_scale{scale} {
     filepath = "art/" + filepath;
     if (filepath.contains(".aseprite")) {
