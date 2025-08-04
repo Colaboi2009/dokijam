@@ -1,6 +1,14 @@
 #pragma once
 
 #include <SDL3/SDL_rect.h>
+#include <memory>
+
+template<typename T>
+using UP = std::unique_ptr<T>;
+template<typename T>
+using WP = std::weak_ptr<T>;
+template<typename T>
+using SP = std::shared_ptr<T>;
 
 float square(float);
 float sqrDist(SDL_FPoint, SDL_FPoint);

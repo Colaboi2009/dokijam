@@ -17,7 +17,7 @@ class SDL {
 
     void present() { SDL_RenderPresent(m_renderer); }
     void setColor(SDL_Color c) { SDL_SetRenderDrawColor(m_renderer, c.r, c.g, c.b, c.a); }
-    void clear() { setColor({0, 0, 0, 0}); SDL_RenderClear(m_renderer); }
+    void clear(SDL_Color c) { setColor(c); SDL_RenderClear(m_renderer); }
 
 	void renderDebugText(SDL_FPoint p, std::string str) { SDL_RenderDebugText(m_renderer, p.x, p.y, str.c_str()); }
 
