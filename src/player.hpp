@@ -8,7 +8,8 @@ class Player : public IElement, public ICollider {
   private:
     Animation m_sprite;
     SDL_FPoint m_pos;
-	SDL_FPoint m_boundsOffset;
+	// sprites are centered, so use this to match it with the bounding box
+	SDL_FPoint m_spriteOffset;
 	SDL_FPoint m_bounds;
 
   public:

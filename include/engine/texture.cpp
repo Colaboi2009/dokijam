@@ -35,6 +35,7 @@ void Texture::render(SDL_FRect dst) {
         dst.w = float(m_w);
         dst.h = float(m_h);
     } 
+
 	dst.x = dst.x - float(dst.w / 2.f);
 	dst.y = dst.y - float(dst.h / 2.f);
 	

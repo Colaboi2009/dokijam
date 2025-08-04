@@ -2,7 +2,7 @@
 
 Player::Player() : m_sprite("tester.aseprite", 4) {
 	m_pos = {800, 500};
-	m_boundsOffset = {-25, -25};
+	m_spriteOffset = {25, 25};
 	m_bounds = {50, 50};
 
 	im_immovable = false;
@@ -26,10 +26,10 @@ void Player::prerender(float dt) {
     }
 }
 
-void Player::render() { m_sprite.render(m_pos); }
+void Player::render() { m_sprite.render((Point)m_pos + (Point)m_spriteOffset); }
 
 SDL_FRect Player::bounds() {
-	return {m_pos.x + m_boundsOffset.x, m_pos.y + m_boundsOffset.y, m_bounds.x, m_bounds.y};
+	return {m_pos.x, m_pos.y, m_bounds.x, m_bounds.y};
 }
 
 void Player::sex(float x) {
