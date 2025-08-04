@@ -41,37 +41,33 @@ int main() {
             el->render();
         }
 
-        for (const auto &coll : icolliders) {
-            for (const auto &colr : icolliders) {
+        for (auto &coll : icolliders) {
+            for (auto &colr : icolliders) {
                 if (coll == colr) {
                     continue;
                 }
                 sdl.setColor({0, 255, 0, 255});
 
                 if (rectsOverlap(coll->bounds(), colr->bounds())) {
-                    SDL_FRect l;
-                    SDL_FRect r;
-					SP<IElement> lcol;
-
-                    if (center(coll->bounds()).x > center(colr->bounds()).x) {
-                        r = coll->bounds();
-                        l = colr->bounds();
-                        //lcol = colr;
-                    } else {
-                        l = coll->bounds();
-                        r = colr->bounds();
-                        const auto &lcol = coll;
+                    if (center(coll->bounds()).x < center(colr->bounds()).x) {
+						std::swap(coll, colr);
                     }
+                    SDL_FRect l = coll->bounds();
+                    SDL_FRect r = colr->bounds();
 
                     SDL_FPoint ltopl = {l.x, l.y};
-                    SDL_FPoint lbotr = {l.x + l.w, l.y + l.w};
+                    SDL_FPoint lbotr = {l.x + l.w, l.y + l.h};
                     SDL_FPoint lcen = {center(l).x, center(l).y};
 
                     SDL_FPoint rtopl = {r.x, r.y};
-                    SDL_FPoint rbotr = {r.x + r.w, r.y + r.w};
+                    SDL_FPoint rbotr = {r.x + r.w, r.y + r.h};
                     SDL_FPoint rcen = {center(r).x, center(r).y};
 
-                    //lcol->sex(rbotr.x);
+					if (!coll->im_immovable && colr->im_immovable) {
+						colr->sex(lbotr.x);
+					} else if (coll->im_immovable && !colr->im_immovable) {
+						coll->sex(rtopl.x - l.w);
+					}
                 }
 
                 sdl.drawRect(coll->bounds());
