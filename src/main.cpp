@@ -98,6 +98,10 @@ void handlePlayerInput(entt::registry &registry, const entt::entity &player) {
     if (SDL_GetKeyboardState(NULL)[SDL_SCANCODE_S]) {
         velocity.dx -= speed;
     }
+	if (SDL_GetKeyboardState(NULL)[SDL_SCANCODE_SPACE]) {
+		SP<Animation> anim = registry.get<ecs::Sprite>(player).animation;
+		anim->once(1);
+	}
 }
 
 // Synchronous queued input
