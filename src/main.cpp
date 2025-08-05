@@ -34,6 +34,10 @@ void handleInput(entt::registry &registry, const entt::entity &player) {
     if (SDL_GetKeyboardState(NULL)[SDL_SCANCODE_S]) {
         velocity.dx -= speed;
     }
+	if (SDL_GetKeyboardState(NULL)[SDL_SCANCODE_SPACE]) {
+		SP<Animation> anim = registry.get<ecs::Sprite>(player).animation;
+		anim->once(1);
+	}
 }
 
 void handleMovementSystem(entt::registry &registry) {
@@ -112,7 +116,7 @@ int main() {
     entt::registry registry;
 
     SP<Animation> animation = std::make_shared<Animation>("green_junimo.aseprite");
-	animation->repeat(1);
+	animation->repeat(0);
 
     // We can use ecs::Movable, or we can decide based on ecs::Velocity,
     // if the entity can be moved
