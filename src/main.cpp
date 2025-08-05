@@ -111,7 +111,8 @@ int main() {
 
     entt::registry registry;
 
-    SP<Animation> animation = std::make_shared<Animation>("tester.aseprite");
+    SP<Animation> animation = std::make_shared<Animation>("green_junimo.aseprite");
+	animation->repeat(1);
 
     // We can use ecs::Movable, or we can decide based on ecs::Velocity,
     // if the entity can be moved
