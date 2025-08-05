@@ -8,7 +8,6 @@ compile:
 		&& cmake -S ../ -B . \
 		&& make \
 		&& cd .. \
-		&& cp build/$(PROJECT) . \
 
 release:
 	@mkdir -p build \
@@ -16,10 +15,9 @@ release:
 		&& cmake -S ../ -B . \
 		&& make \
 		&& cd .. \
-		&& cp build/$(PROJECT) . \
 
 play:
-	@./$(PROJECT)
+	@./build/$(PROJECT)
 
 killall:
 	ps -h | grep $(PROJECT) | grep -v grep | awk '{print $1}' | xargs -r kill -9

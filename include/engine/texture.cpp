@@ -26,18 +26,24 @@ void Texture::create(SDL_Surface *surf, SDL_ScaleMode scaleMode) {
 
 void Texture::render(SDL_FRect dst) {
     assert(m_texture != nullptr && "Cannot render a NULL texture!");
-    if (dst.x + dst.y + dst.h + dst.w == 0) {
-        sdl.renderTexture(*m_texture, NULL, NULL);
-		return;
-    }
 
-	if (dst.w + dst.h == 0) {
-        dst.w = float(m_w);
-        dst.h = float(m_h);
-    } 
+    // These cases will probably never happen,
+    // so no need to check in performance-critical part of code
+    // also the offsetting of .x and .y messes up collisions,
+    // lets keep the origin of a texture in top-left
 
-	dst.x = dst.x - float(dst.w / 2.f);
-	dst.y = dst.y - float(dst.h / 2.f);
+    //if (dst.x + dst.y + dst.h + dst.w == 0) {
+    //    sdl.renderTexture(*m_texture, NULL, NULL);
+	//	return;
+    //}
+    //
+	//if (dst.w + dst.h == 0) {
+    //    dst.w = float(m_w);
+    //    dst.h = float(m_h);
+    //} 
+    //
+	//dst.x = dst.x - float(dst.w / 2.f);
+	//dst.y = dst.y - float(dst.h / 2.f);
 	
     sdl.renderTexture(*m_texture, NULL, &dst);
 }
