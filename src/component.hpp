@@ -25,10 +25,11 @@ struct Shape {
 };
 
 struct Transform {
-    SDL_FRect box;
+    SDL_FRect box = { 0.0f, 0.0f, 0.0f, 0.0f };
 
     // not sure if you are supposed to put helper functions inside a struct, but its damn convenient, and prevents math mistakes. Maybe in
     // utility?
+    // note(skulaurun): probably ok for helpers
 	// bottom right
     const SDL_FPoint botr() const { return {box.x + box.w, box.y + box.h}; }
 

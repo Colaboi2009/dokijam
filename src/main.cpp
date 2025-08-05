@@ -117,7 +117,7 @@ int main() {
     // if the entity can be moved
 
     const entt::entity player = registry.create();
-    registry.emplace<ecs::Transform>(player, 800, 500, 0, 0);
+    registry.emplace<ecs::Transform>(player, 800, 500, 50, 50);
     registry.emplace<ecs::Velocity>(player);
     registry.emplace<ecs::BoxCollider>(player);
     registry.emplace<ecs::Sprite>(player, animation);
@@ -150,7 +150,7 @@ int main() {
         // TODO: Might need to handle render order
         auto spriteRenderables = registry.view<ecs::Transform, ecs::Sprite>();
         for (auto [e, transform, sprite] : spriteRenderables.each()) {
-            sprite.animation->render(Point{transform.box.x, transform.box.y});
+            sprite.animation->render(transform.box);
         }
 
         auto shapeRenderables = registry.view<ecs::Transform, ecs::Shape>();

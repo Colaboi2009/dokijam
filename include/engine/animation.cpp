@@ -7,7 +7,7 @@
 
 #include <stdexcept>
 
-Animation::Animation(std::string filepath, float scale) /* : m_scale{scale}*/ {
+Animation::Animation(std::string filepath) {
     filepath = "art/" + filepath;
     if (filepath.contains(".aseprite")) {
         create_aseprite(filepath);
@@ -82,7 +82,7 @@ void Animation::repeat(int i) {
     play();
 }
 
-void Animation::render(Point dst) {
+void Animation::render(SDL_FRect dst) {
     if (m_playing && SDL_GetTicks() - m_frameStart > m_delays[m_frame]) {
         m_frame++;
         m_frameStart = SDL_GetTicks();
@@ -95,6 +95,5 @@ void Animation::render(Point dst) {
             restart();
         }
     }
-    //m_textures[m_frame].render(dst, m_scale);
     m_textures[m_frame].render(dst);
 }

@@ -1,6 +1,6 @@
 #include "player.hpp"
 
-Player::Player() : m_sprite("tester.aseprite", 4) {
+Player::Player() : m_sprite("tester.aseprite") {
 	m_pos = {800, 500};
 	m_spriteOffset = {25, 25};
 	m_bounds = {50, 50};

@@ -7,8 +7,6 @@
 
 class Animation {
   private:
-	//float m_scale;
-
     int m_frameCount;
     std::vector<int> m_delays;
     std::vector<Texture> m_textures;
@@ -26,7 +24,7 @@ class Animation {
 	void create_aseprite(std::string filepath);
 
   public:
-    Animation(std::string filepath, float scale = 1);
+    Animation(std::string filepath);
     ~Animation();
 
 	//int scale() const { return m_scale; }
@@ -43,5 +41,5 @@ class Animation {
 	void once(int i = 0);
 	void repeat(int i = 0);
 
-    void render(Point dst);
+    void render(SDL_FRect dst);
 };
