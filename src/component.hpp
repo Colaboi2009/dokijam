@@ -1,0 +1,63 @@
+#pragma once
+
+#include "engine/sdl_wrapper.hpp"
+#include "engine/animation.hpp"
+
+namespace ecs {
+
+    // not really needed rn
+    struct Movable {};
+    struct Renderable {};
+
+    struct Sprite {
+        std::shared_ptr<Animation> animation;
+
+        Sprite(std::shared_ptr<Animation>& animation)
+            : animation(animation) {}
+    };
+    struct Shape {
+        SDL_Color fillColor;
+        SDL_Color outlineColor;
+
+        // ShapeType = Rectangle, Circle?
+
+        Shape(const SDL_Color& color)
+            : fillColor(color), outlineColor(color) {}
+        Shape(const SDL_Color& fillColor, SDL_Color& outlineColor)
+            : fillColor(fillColor), outlineColor(outlineColor) {}
+    };
+
+    struct Transform {
+        SDL_FRect box;
+
+        Transform() = default;
+        Transform(const float x, const float y, const float w, const float h)
+            : box({x, y, w, h}) {}
+    };
+
+    struct Velocity {
+        float dx = 0.0f;
+        float dy = 0.0f;
+
+        Velocity() = default;
+    };
+
+    struct Health {
+        int current;
+        int maximum;
+
+        Health(const int maximum)
+            : current(maximum), maximum(maximum) {}
+    };
+
+    struct BoxCollider {
+        // Bounds offset or scale
+
+        BoxCollider() {}
+    };
+
+    struct AttackTarget {
+
+    };
+
+}

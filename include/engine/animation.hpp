@@ -7,7 +7,7 @@
 
 class Animation {
   private:
-	float m_scale;
+	//float m_scale;
 
     int m_frameCount;
     std::vector<int> m_delays;
@@ -29,8 +29,8 @@ class Animation {
     Animation(std::string filepath, float scale = 1);
     ~Animation();
 
-	int scale() const { return m_scale; }
-	void setScale(float s) { m_scale = s; }
+	//int scale() const { return m_scale; }
+	//void setScale(float s) { m_scale = s; }
 
 	bool playing() const { return m_playing; }
 	int tagIndex() const { return m_curTagIndex; }

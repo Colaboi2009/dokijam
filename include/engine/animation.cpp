@@ -7,7 +7,7 @@
 
 #include <stdexcept>
 
-Animation::Animation(std::string filepath, float scale) : m_scale{scale} {
+Animation::Animation(std::string filepath, float scale) /* : m_scale{scale}*/ {
     filepath = "art/" + filepath;
     if (filepath.contains(".aseprite")) {
         create_aseprite(filepath);
@@ -95,5 +95,6 @@ void Animation::render(Point dst) {
             restart();
         }
     }
-    m_textures[m_frame].render(dst, m_scale);
+    //m_textures[m_frame].render(dst, m_scale);
+    m_textures[m_frame].render(dst);
 }

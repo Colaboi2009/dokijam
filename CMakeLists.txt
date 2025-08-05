@@ -26,6 +26,7 @@ target_link_libraries(${PROJECT_NAME}
 	SDL3_image::SDL3_image
 	SDL3_ttf::SDL3_ttf
 	ZLIB::ZLIBSTATIC
+    EnTT::EnTT
 )
 target_include_directories(${PROJECT_NAME} PUBLIC 
 	src
