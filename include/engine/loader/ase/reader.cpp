@@ -1,9 +1,7 @@
 #include "reader.hpp"
 
-#include <iostream>
-
 namespace loader::ase {
-Reader::Reader(std::string filepath) : m_f(filepath, std::ios_base::binary & std::ios_base::in) {
+Reader::Reader(std::string filepath) : m_f(filepath, std::ios_base::binary) {
     assert(m_f.is_open() && "Couldn't open aseprite file!");
 }
 
