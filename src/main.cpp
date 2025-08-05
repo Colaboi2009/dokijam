@@ -12,10 +12,74 @@
 
 SDL sdl;
 
-std::vector<SP<IElement>> ielements;
-std::vector<SP<ICollider>> icolliders;
+void handleCleanup(entt::registry &registry) {
+    auto view = registry.view<ecs::JustDieAfter>();
+    for (auto [e, dieAfter] : view.each()) {
+        uint64_t now = SDL_GetTicks();
+        if (now - dieAfter.createdAt >= dieAfter.msToLive) {
+            bool hasExplosion = registry.any_of<ecs::Explosion>(e);
+            if (hasExplosion) {
+                // trigger an explosion and then destroy
+                // probably through a bool on ecs::Explosion
+                // to a separate Explosion system,
+                // depends on the performance cost of EnTT views,
+                // but code-organization-wise, it is better to separate to systems
+                // that handle their own logic and nothing more
+            } else {
+                registry.destroy(e);
+            }
+        }
+    }
+}
 
-void handleInput(entt::registry &registry, const entt::entity &player) {
+void handleSpawn(entt::registry &registry) {
+    auto view = registry.view<ecs::Transform, ecs::Spawner>();
+    for (auto [e, transform, spawner] : view.each()) {
+        // If an entity has an attached spawner, and also has a transform
+        // we can create an entity next to it based on the spawner type
+
+        // If we want mobs to duplicate or spawn minions, we can use this too
+
+        // Or if we want to shoot dragoons, we can spawn them
+        // and apply velocity in the direction of mouse cursor
+        if (spawner.shouldSpawn) {
+            switch (spawner.type) {
+                case ecs::Spawner::Type::Dragoon: {
+                    auto dragoon = registry.create();
+
+                    float mouseX = 0.0f;
+                    float mouseY = 0.0f;
+                    SDL_GetMouseState(&mouseX, &mouseY);
+
+                    float dx = mouseX - transform.box.x;
+                    float dy = mouseY - transform.box.y;
+
+                    float length = std::sqrt(dx * dx + dy * dy);
+                    if (length == 0) continue;
+
+                    dx /= length;
+                    dy /= length;
+
+                    constexpr float speed = 10.0f;
+
+                    registry.emplace<ecs::Transform>(dragoon, transform.box);
+                    auto& velocity = registry.emplace<ecs::Velocity>(dragoon);
+                    velocity.dx = speed * dx;
+                    velocity.dy = speed * dy;
+                    registry.emplace<ecs::Shape>(dragoon, SDL_Color{255, 0, 0, 255});
+                    registry.emplace<ecs::JustDieAfter>(dragoon, SDL_GetTicks(), (rand() % 600) + 500);
+                    // For fun
+                    registry.emplace<ecs::BoxCollider>(dragoon);
+                    break;
+                }
+            }
+            spawner.shouldSpawn = false;
+        }
+    }
+}
+
+// Real-time input
+void handlePlayerInput(entt::registry &registry, const entt::entity &player) {
     auto &velocity = registry.get<ecs::Velocity>(player);
 
     velocity.dx = 0;
@@ -33,6 +97,14 @@ void handleInput(entt::registry &registry, const entt::entity &player) {
     }
     if (SDL_GetKeyboardState(NULL)[SDL_SCANCODE_S]) {
         velocity.dx -= speed;
+    }
+}
+
+// Synchronous queued input
+void handleSynchronousInput(entt::registry &registry, const entt::entity &player, SDL_Event& event) {
+    if (event.type == SDL_EVENT_MOUSE_BUTTON_DOWN) {
+        auto& spawner = registry.get<ecs::Spawner>(player);
+        spawner.shouldSpawn = true;
     }
 }
 
@@ -111,7 +183,7 @@ int main() {
 
     entt::registry registry;
 
-    SP<Animation> animation = std::make_shared<Animation>("green_junimo.aseprite");
+    SP<Animation> animation = std::make_shared<Animation>("tester.aseprite");
 	animation->repeat(1);
 
     // We can use ecs::Movable, or we can decide based on ecs::Velocity,
@@ -122,6 +194,7 @@ int main() {
     registry.emplace<ecs::Velocity>(player);
     registry.emplace<ecs::BoxCollider>(player);
     registry.emplace<ecs::Sprite>(player, animation);
+    registry.emplace<ecs::Spawner>(player, ecs::Spawner::Type::Dragoon);
 
     const entt::entity platform = registry.create();
     registry.emplace<ecs::Transform>(platform, 300, 800, 80, 30);
@@ -142,11 +215,14 @@ int main() {
             if (e.type == SDL_EVENT_QUIT) {
                 goto EXIT;
             }
+            handleSynchronousInput(registry, player, e);
         }
 
-        handleInput(registry, player);
+        handlePlayerInput(registry, player);
         handleCollisionSystem(registry);
         handleMovementSystem(registry);
+        handleSpawn(registry);
+        handleCleanup(registry);
 
         // TODO: Might need to handle render order
         auto spriteRenderables = registry.view<ecs::Transform, ecs::Sprite>();
