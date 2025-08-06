@@ -92,37 +92,68 @@ static void handleBBCollisions(entt::registry &reg, entt::entity e1, entt::entit
 }
 
 static void handleBCCollisions(entt::registry &reg, entt::entity eb, entt::entity ec, const double dt) {
+    Position &ebpos = reg.get<Position>(eb);
+    BoxCollider &ebbox = reg.get<BoxCollider>(eb);
+    SDL_FRect ebrect = {ebpos.x + ebbox.xOffset, ebpos.y + ebbox.yOffset, ebbox.width, ebbox.height};
+
+    Position &ecposcomp = reg.get<Position>(ec);
+    CircleCollider &ecc = reg.get<CircleCollider>(ec);
+	SDL_FPoint ecpos = {ecposcomp.x + ecc.xOffset, ecposcomp.y + ecc.yOffset};
+
+    if (isMovable(reg, ec) && !isMovable(reg, eb)) {
+        Velocity &ecvel = reg.get<Velocity>(ec);
+        SDL_FRect ebexpanded = {ebrect.x - ecc.radius, ebrect.y - ecc.radius, ebrect.w + ecc.radius, ebrect.h + ecc.radius};
+
+        if (ecvel.dx == 0 && ecvel.dy == 0) {
+            return;
+        }
+
+        SDL_FPoint contact_pos;
+        SDL_FPoint normal;
+        float contact_time;
+        if (rayVsRect(ecpos, {ecvel.dx * (float)dt, ecvel.dy * (float)dt}, ebexpanded,
+                      contact_pos, normal, contact_time) &&
+            contact_time < 1.0f && contact_time >= 0.f) {
+            ecvel.dx += normal.x * std::abs(ecvel.dx) * (1 - contact_time);
+            ecvel.dy += normal.y * std::abs(ecvel.dy) * (1 - contact_time);
+        }
+    } else if (!isMovable(reg, ec) && isMovable(reg, eb)) {
+		Velocity &ebvel = reg.get<Velocity>(eb);
+    } else if (isMovable(reg, ec) && isMovable(reg, eb)) {
+        Velocity &ecvel = reg.get<Velocity>(ec);
+        Velocity &ebvel = reg.get<Velocity>(eb);
+    }
 }
 
 static void handleCCCollisions(entt::registry &reg, entt::entity e1, entt::entity e2, const double dt) {
-	Position &e1poscomp = reg.get<Position>(e1);
-	CircleCollider &e1cir = reg.get<CircleCollider>(e1);
-	Point e1pos = {e1poscomp.x + e1cir.xOffset, e1poscomp.y + e1cir.yOffset};
+    Position &e1poscomp = reg.get<Position>(e1);
+    CircleCollider &e1cir = reg.get<CircleCollider>(e1);
+    Point e1pos = {e1poscomp.x + e1cir.xOffset, e1poscomp.y + e1cir.yOffset};
 
-	Position &e2poscomp = reg.get<Position>(e2);
-	CircleCollider &e2cir = reg.get<CircleCollider>(e2);
-	Point e2pos = {e2poscomp.x + e2cir.xOffset, e2poscomp.y + e2cir.yOffset};
+    Position &e2poscomp = reg.get<Position>(e2);
+    CircleCollider &e2cir = reg.get<CircleCollider>(e2);
+    Point e2pos = {e2poscomp.x + e2cir.xOffset, e2poscomp.y + e2cir.yOffset};
 
-	float sqr_dist = sqrDist(e1pos, e2pos);
-	float radius_sum = e1cir.radius + e2cir.radius;
+    float sqr_dist = sqrDist(e1pos, e2pos);
+    float radius_sum = e1cir.radius + e2cir.radius;
 
-	if (sqr_dist > radius_sum * radius_sum) {
-		return;
-	}
+    if (sqr_dist > radius_sum * radius_sum) {
+        return;
+    }
 
-	Point dir = e2pos - e1pos;
-	float length = sqrt(dir.x * dir.x + dir.y * dir.y);
-	dir.x /= length;
-	dir.y /= length;
+    Point dir = e2pos - e1pos;
+    float length = sqrt(dir.x * dir.x + dir.y * dir.y);
+    dir.x /= length;
+    dir.y /= length;
 
-	float error = radius_sum - sqrt(sqr_dist);
+    float error = radius_sum - sqrt(sqr_dist);
 
-	if (isMovable(reg, e1) && !isMovable(reg, e2)) {
-		Velocity e1vel = reg.get<Velocity>(e1);
+    if (isMovable(reg, e1) && !isMovable(reg, e2)) {
+        Velocity e1vel = reg.get<Velocity>(e1);
 
-		e1poscomp.x -= dir.x * error;
-		e1poscomp.y -= dir.y * error;
-	}
+        e1poscomp.x -= dir.x * error;
+        e1poscomp.y -= dir.y * error;
+    }
 }
 
 void collision(entt::registry &registry, const double dt) {
