@@ -9,6 +9,10 @@ Reader::~Reader() { m_f.close(); }
 
 size_t Reader::tell() { return m_f.tellg(); }
 
+void Reader::rdbuf(char* dst, std::size_t length) {
+    m_f.read(dst, length);
+}
+
 byte Reader::rbyte() {
     byte c;
     m_f.read((char *)&c, 1);

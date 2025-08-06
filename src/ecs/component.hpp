@@ -39,9 +39,17 @@ struct Rectangle {
 struct Position {
     float x = 0.0f;
     float y = 0.0f;
+    /*
+        Layer,
+        we can also use this to skip collision detection,
+        when the entities are on different layers,
+        or skip checking some layers (like ground) completely,
+        etc.
+    */
+    float z = 0.0f;
 
     Position() = default;
-    Position(const float x, const float y) : x(x), y(y) {}
+    Position(const float x, const float y, const float z = 0.0f) : x(x), y(y), z(z) {}
 };
 
 struct Velocity {

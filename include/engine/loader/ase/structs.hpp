@@ -3,6 +3,8 @@
 #include <SDL3/SDL_render.h>
 #include <cstdint>
 #include <vector>
+#include <memory>
+#include <unordered_map>
 
 namespace loader::ase {
 using dword = uint32_t;
@@ -76,9 +78,26 @@ struct Frame {
     std::vector<Chunk> chunks;
 };
 
+struct TileSet {
+    int32_t width;
+    int32_t height;
+    std::size_t count;
+    std::vector<uint8_t> pixels;
+    SDL_Surface* surface;
+};
+
+struct TileMap {
+    int32_t width;
+    int32_t height;
+    // ase-file-specs.md: "at the moment it's always 32-bit per tile"
+    std::vector<uint32_t> tiles;
+};
+
 struct Asefile {
     std::vector<SDL_Surface *> frames;
     std::vector<word> durations;
     std::vector<std::pair<word, word>> tags;
+    std::unordered_map<dword, std::shared_ptr<TileSet>> tilesets;
+    std::vector<TileMap> tilemaps;
 };
 } // namespace loader::ase

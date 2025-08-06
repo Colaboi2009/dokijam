@@ -1,6 +1,27 @@
 #include "aseprite.hpp"
+#include "structs.hpp"
 
 #include "reader.hpp"
+
+enum class TileSetFlags : uint8_t {
+    LinkToExternalFile      = 0b000001,
+    FileIncludesTiles       = 0b000010,
+    NewEmptyFormat          = 0b000100,
+    AutoMatchXFlipped       = 0b001000,
+    AutoMatchYFlipped       = 0b010000,
+    AutoMatchDFlipped       = 0b100000
+};
+
+template<typename T, typename U>
+bool hasFlag(const T flags, const U x) {
+    return (flags & static_cast<T>(x)) == static_cast<T>(x);
+}
+
+/*
+    note(Skulaurun):
+    Your checking for flags with ==,
+    works if only one of the flags is set
+*/
 
 namespace loader::ase {
 void aseprite(const std::string filepath, Asefile &f) {
@@ -118,6 +139,30 @@ void aseprite(const std::string filepath, Asefile &f) {
 							}
                         } break;
                         case 3: {
+                            /* not tested, cuz it doesn't run */
+                            printf("I AM HIDDEN HAHA\n");
+                            word w = r.rword();
+                            word h = r.rword();
+                            word bpt = r.rword();
+                            dword maskTileID = r.rdword();
+                            dword maskXFlip = r.rdword();
+                            dword maskYFlip = r.rdword();
+                            dword maskDFlip = r.rdword();
+                            r.rpadding(10);
+                            std::size_t length = chunkSize - std::size_t(6 + 22 + 10);
+                            std::vector<uint8_t> compressed(length);
+                            r.rdbuf((char*)compressed.data(), length);
+
+                            TileMap& tilemap = f.tilemaps.emplace_back();
+                            tilemap.width = w;
+                            tilemap.height = h;
+                            tilemap.tiles.resize(std::size_t(w) * h);
+
+                            uLongf outSize = tilemap.tiles.size();
+                            assert(
+                                uncompress((Bytef*)tilemap.tiles.data(), &outSize, compressed.data(), compressed.size()) == Z_OK
+                                && "zlib uncompress failed"
+                            );
                         } break;
                     }
                 } break;
@@ -339,11 +384,33 @@ void aseprite(const std::string filepath, Asefile &f) {
                     short baseIndex = r.rshort();
                     r.rpadding(14);
                     std::string tilesetName = r.rstring();
-                    if (flags == 1) {
+                    if (hasFlag(flags, TileSetFlags::LinkToExternalFile)) {
                         dword externFileId = r.rword();
                         dword externFileTilesetId = r.rdword();
-                    } else if (flags == 2) {
+                    } else if (hasFlag(flags, TileSetFlags::FileIncludesTiles)) {
                         dword length = r.rdword();
+                        const auto [pair, _] = f.tilesets.emplace(tilesetID, std::make_shared<TileSet>());
+                        TileSet& tileset = *pair->second;
+                        tileset.width = w;
+                        tileset.height = h;
+                        tileset.count = tileCount;
+                        tileset.pixels.resize(std::size_t(w) * 4 * h * tileCount);
+
+                        std::vector<uint8_t> compressed(length);
+                        r.rdbuf((char*)compressed.data(), length);
+
+                        uLongf outSize = tileset.pixels.size();
+                        assert(
+                            uncompress(tileset.pixels.data(), &outSize, compressed.data(), compressed.size()) == Z_OK
+                            && "zlib uncompress failed"
+                        );
+                        tileset.surface = SDL_CreateSurfaceFrom(
+                            tileset.width,
+                            tileset.height * tileset.count,
+                            SDL_PIXELFORMAT_RGBA32,
+                            tileset.pixels.data(),
+                            tileset.width * 4
+                        );
                     }
                 } break;
             }
@@ -352,6 +419,7 @@ void aseprite(const std::string filepath, Asefile &f) {
 
     f.frames.resize(frames);
     for (int i = 0; i < frames; i++) {
+        // warn(Skulaurun): This buffer is not managed by SDL, need to free
         uint32_t *pixels = (uint32_t *)malloc(width * height * sizeof(uint32_t));
 		int pos = 0;
         for (int y = 0; y < height; y++) {
