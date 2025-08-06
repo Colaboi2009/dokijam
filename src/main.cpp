@@ -18,7 +18,7 @@ int main() {
     const entt::entity player = registry.create();
     registry.emplace<ecs::Position>(player, 800, 500);
     registry.emplace<ecs::Velocity>(player);
-    registry.emplace<ecs::BoxCollider>(player, 0, 0, 50, 50);
+    registry.emplace<ecs::BoxCollider>(player, -30, 0, 60, 60);
     registry.emplace<ecs::Sprite>(player, animation, 4);
     registry.emplace<ecs::Spawner>(player, ecs::Spawner::Type::Dragoon);
 
@@ -52,7 +52,7 @@ int main() {
         }
 
         ecs::asyncInput(registry, player);
-        ecs::collision(registry);
+        ecs::collision(registry, deltaTime);
         ecs::movement(registry, deltaTime);
         ecs::spawn(registry);
         ecs::cleanup(registry, deltaTime);

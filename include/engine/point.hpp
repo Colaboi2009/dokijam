@@ -20,13 +20,12 @@ class Point {
     operator SDL_Rect() const;
     operator SDL_FRect() const;
 
-    float x() const;
-    float y() const;
-    void x(int);
-    void y(int);
+	float &x = m_p[0];
+	float &y = m_p[1];
 
 	Point operator+(Point) const;
 	Point operator-(Point) const;
+	Point operator/(Point) const;
 	bool operator==(Point) const;
 	bool operator<=(Point) const;
 	bool operator>=(Point) const;
