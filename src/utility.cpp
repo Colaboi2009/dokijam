@@ -1,9 +1,17 @@
 #include "utility.hpp"
 #include <cstdlib>
+#include <numeric>
+#include <vector>
 
 float square(float f) { return f * f; }
 
 float sqrDist(SDL_FPoint l, SDL_FPoint r) { return square(l.x - r.x) + square(l.y - r.y); }
+
+float dot(SDL_FPoint l, SDL_FPoint r) {
+	std::vector<float> v1{l.x, l.y};
+	std::vector<float> v2{r.x, r.y};
+	return std::inner_product(v1.begin(), v1.end(), v2.begin(), 0);
+}
 
 SDL_FRect center(SDL_FRect r) { return {r.x - r.w / 2.f, r.y - r.h / 2.f, r.w, r.h}; }
 

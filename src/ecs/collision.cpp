@@ -79,8 +79,9 @@ static void handleBBCollisions(entt::registry &reg, entt::entity e1, entt::entit
         SDL_FPoint contact_pos;
         SDL_FPoint normal;
         float contact_time;
-        if (rayVsRect({e1rect.x + e1rect.w / 2.f, e1rect.y + e1rect.h / 2.f}, {e1vel.dx * (float)dt, e1vel.dy * (float)dt}, e2expanded, contact_pos,
-                      normal, contact_time) && contact_time < 1.0f && contact_time >= 0.f) {
+        if (rayVsRect({e1rect.x + e1rect.w / 2.f, e1rect.y + e1rect.h / 2.f}, {e1vel.dx * (float)dt, e1vel.dy * (float)dt}, e2expanded,
+                      contact_pos, normal, contact_time) &&
+            contact_time < 1.0f && contact_time >= 0.f) {
             e1vel.dx += normal.x * std::abs(e1vel.dx) * (1 - contact_time);
             e1vel.dy += normal.y * std::abs(e1vel.dy) * (1 - contact_time);
         }
@@ -90,9 +91,39 @@ static void handleBBCollisions(entt::registry &reg, entt::entity e1, entt::entit
     }
 }
 
-static void handleBCCollisions(entt::registry &reg, entt::entity eb, entt::entity ec) {}
+static void handleBCCollisions(entt::registry &reg, entt::entity eb, entt::entity ec, const double dt) {
+}
 
-static void handleCCCollisions(entt::registry &reg, entt::entity e1, entt::entity e2) {}
+static void handleCCCollisions(entt::registry &reg, entt::entity e1, entt::entity e2, const double dt) {
+	Position &e1poscomp = reg.get<Position>(e1);
+	CircleCollider &e1cir = reg.get<CircleCollider>(e1);
+	Point e1pos = {e1poscomp.x + e1cir.xOffset, e1poscomp.y + e1cir.yOffset};
+
+	Position &e2poscomp = reg.get<Position>(e2);
+	CircleCollider &e2cir = reg.get<CircleCollider>(e2);
+	Point e2pos = {e2poscomp.x + e2cir.xOffset, e2poscomp.y + e2cir.yOffset};
+
+	float sqr_dist = sqrDist(e1pos, e2pos);
+	float radius_sum = e1cir.radius + e2cir.radius;
+
+	if (sqr_dist > radius_sum * radius_sum) {
+		return;
+	}
+
+	Point dir = e2pos - e1pos;
+	float length = sqrt(dir.x * dir.x + dir.y * dir.y);
+	dir.x /= length;
+	dir.y /= length;
+
+	float error = radius_sum - sqrt(sqr_dist);
+
+	if (isMovable(reg, e1) && !isMovable(reg, e2)) {
+		Velocity e1vel = reg.get<Velocity>(e1);
+
+		e1poscomp.x -= dir.x * error;
+		e1poscomp.y -= dir.y * error;
+	}
+}
 
 void collision(entt::registry &registry, const double dt) {
     auto view = registry.view<Position>();
@@ -105,9 +136,9 @@ void collision(entt::registry &registry, const double dt) {
                     if (registry.any_of<BoxCollider>(e1) && registry.any_of<BoxCollider>(e2)) {
                         handleBBCollisions(registry, e1, e2, dt);
                     } else if (registry.any_of<BoxCollider>(e1) && registry.any_of<CircleCollider>(e2)) {
-                        handleBCCollisions(registry, e1, e2);
+                        handleBCCollisions(registry, e1, e2, dt);
                     } else if (registry.any_of<CircleCollider>(e1) && registry.any_of<CircleCollider>(e2)) {
-                        handleCCCollisions(registry, e1, e2);
+                        handleCCCollisions(registry, e1, e2, dt);
                     }
                 }
             }
