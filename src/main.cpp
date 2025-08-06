@@ -16,22 +16,22 @@ int main() {
     // if the entity can be moved
 
     const entt::entity player = registry.create();
-    registry.emplace<ecs::Transform>(player, 800, 500, 50, 50);
+    registry.emplace<ecs::Position>(player, 800, 500);
     registry.emplace<ecs::Velocity>(player);
-    registry.emplace<ecs::BoxCollider>(player);
-    registry.emplace<ecs::Sprite>(player, animation);
+    registry.emplace<ecs::BoxCollider>(player, 0, 0, 50, 50);
+    registry.emplace<ecs::Sprite>(player, animation, 4);
     registry.emplace<ecs::Spawner>(player, ecs::Spawner::Type::Dragoon);
 
     const entt::entity platform = registry.create();
-    registry.emplace<ecs::Transform>(platform, 300, 800, 80, 30);
+    registry.emplace<ecs::Position>(platform, 300, 800);
     registry.emplace<ecs::Velocity>(platform);
-    registry.emplace<ecs::BoxCollider>(platform);
-    registry.emplace<ecs::Shape>(platform, SDL_Color{255, 255, 255, 255});
+    registry.emplace<ecs::BoxCollider>(platform, 0, 0, 80, 30);
+    registry.emplace<ecs::Rectangle>(platform, 80, 30, SDL_Color{255, 255, 255, 255});
 
     const entt::entity YOU_CANT_MOVE_ME = registry.create();
-    registry.emplace<ecs::Transform>(YOU_CANT_MOVE_ME, 500, 600, 120, 30);
-    registry.emplace<ecs::BoxCollider>(YOU_CANT_MOVE_ME);
-    registry.emplace<ecs::Shape>(YOU_CANT_MOVE_ME, SDL_Color{0, 0, 0, 255});
+    registry.emplace<ecs::Position>(YOU_CANT_MOVE_ME, 500, 600);
+    registry.emplace<ecs::BoxCollider>(YOU_CANT_MOVE_ME, 0, 0, 120, 30);
+    registry.emplace<ecs::Rectangle>(YOU_CANT_MOVE_ME, 120, 30, SDL_Color{0, 0, 0, 255});
 
     bool running = true;
     uint64_t lastTime = SDL_GetPerformanceCounter();
@@ -55,7 +55,7 @@ int main() {
         ecs::collision(registry);
         ecs::movement(registry, deltaTime);
         ecs::spawn(registry);
-        ecs::cleanup(registry);
+        ecs::cleanup(registry, deltaTime);
         
         ecs::render(registry, sdl);
 

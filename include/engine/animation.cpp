@@ -82,7 +82,7 @@ void Animation::repeat(int i) {
     play();
 }
 
-void Animation::render(SDL_FRect dst) {
+void Animation::render(const float x, const float y, const float scale) {
     if (m_playing && SDL_GetTicks() - m_frameStart > m_delays[m_frame]) {
         m_frame++;
         m_frameStart = SDL_GetTicks();
@@ -95,5 +95,5 @@ void Animation::render(SDL_FRect dst) {
             restart();
         }
     }
-    m_textures[m_frame].render(dst);
+    m_textures[m_frame].render(Point{x, y}, scale);
 }

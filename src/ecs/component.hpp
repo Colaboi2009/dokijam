@@ -5,34 +5,43 @@
 
 namespace ecs {
 
+namespace detail {
+    struct Collider {
+        float xOffset;
+        float yOffset;
+    };
+}
+
 // not really needed rn
 struct Movable {};
 struct Renderable {}; // anything that has a sprite or shape is renderable anyways
 
 struct Sprite {
+    float scale;
     std::shared_ptr<Animation> animation;
 
-    Sprite(std::shared_ptr<Animation> &animation) : animation(animation) {}
+    Sprite(std::shared_ptr<Animation> &animation, float scale = 1.0f)
+        : animation(animation), scale(scale) {}
 };
-struct Shape {
+struct Rectangle {
     SDL_Color fillColor;
     SDL_Color outlineColor;
 
-    // ShapeType = Rectangle, Circle?
+    float width = 0.0f;
+    float height = 0.0f;
 
-    Shape(const SDL_Color &color) : fillColor(color), outlineColor(color) {}
-    Shape(const SDL_Color &fillColor, SDL_Color &outlineColor) : fillColor(fillColor), outlineColor(outlineColor) {}
+    Rectangle(float width, float height, const SDL_Color &color)
+        : Rectangle(width, height, color, color) {}
+    Rectangle(float width, float height, const SDL_Color &fillColor, const SDL_Color &outlineColor)
+        : width(width), height(height), fillColor(fillColor), outlineColor(outlineColor) {}
 };
 
-struct Transform {
-    SDL_FRect box = { 0.0f, 0.0f, 0.0f, 0.0f };
+struct Position {
+    float x = 0.0f;
+    float y = 0.0f;
 
-	// bottom right
-    const SDL_FPoint botr() const { return {box.x + box.w, box.y + box.h}; }
-
-    Transform() = default;
-    Transform(const SDL_FRect& box) : box(box) {}
-    Transform(const float x, const float y, const float w, const float h) : box({x, y, w, h}) {}
+    Position() = default;
+    Position(const float x, const float y) : x(x), y(y) {}
 };
 
 struct Velocity {
@@ -49,12 +58,23 @@ struct Health {
     Health(const int maximum) : current(maximum), maximum(maximum) {}
 };
 
-struct BoxCollider {
+struct BoxCollider : public detail::Collider {
+    float width;
+    float height;
+
     // Bounds offset or scale
     // note(cola): scale is for the sprite not the box collider,
     // the offset being applied to the collider could make the collision code messier, but if its centralized to only that place might work
 
-    BoxCollider() {}
+    BoxCollider(const float x, const float y, const float w, const float h)
+        : detail::Collider({x, y}), width(w), height(h) {}
+};
+
+struct CircleCollider : public detail::Collider {
+    float radius;
+
+    CircleCollider(const float x, const float y, const float r)
+        : detail::Collider({x, y}), radius(r) {}
 };
 
 struct AttackTarget {};
@@ -102,11 +122,10 @@ struct Explosion {
 
 // Remove the entity after msToLive reaches zero
 struct JustDieAfter {
-    uint64_t createdAt;
-    uint64_t msToLive;
+    int64_t msToLive;
 
-    JustDieAfter(uint64_t now, uint64_t msToLive)
-        : createdAt(now), msToLive(msToLive) {}
+    JustDieAfter(int64_t msToLive)
+        : msToLive(msToLive) {}
 };
 
 } // namespace ecs

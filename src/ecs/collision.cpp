@@ -1,9 +1,9 @@
 #include "ecs.hpp"
 #include "utility.hpp"
-
+/*
 static void resolveCollision(entt::registry &registry, entt::entity &e1, entt::entity &e2) {
-    ecs::Transform &transL = registry.get<ecs::Transform>(e1);
-    ecs::Transform &transR = registry.get<ecs::Transform>(e2);
+    ecs::Position &transL = registry.get<ecs::Position>(e1);
+    ecs::Position &transR = registry.get<ecs::Position>(e2);
 
 	// there could be immovables with velocity, e.g. a moving platform (you're not really supposed to be able to move that yourself)
     bool isLMovable = registry.any_of<ecs::Velocity>(e1);
@@ -40,17 +40,17 @@ static void resolveCollision(entt::registry &registry, entt::entity &e1, entt::e
             }
         }
     }
-}
+}*/
 
 namespace ecs {
 
 void collision(entt::registry &registry) {
-    auto view = registry.view<ecs::Transform, ecs::BoxCollider>();
-    for (auto [e1, transformA] : view.each()) {
-        for (auto [e2, transformB] : view.each()) {
+    auto view = registry.view<ecs::Position, ecs::BoxCollider>();
+    /*for (auto [e1, position, collider] : view.each()) {
+        for (auto [e2, position, collider] : view.each()) {
             if (e1 == e2)
                 continue;
-            if (rectsOverlap(transformA.box, transformB.box)) {
+            if (rectsOverlap(position.box, position.box)) {
                 if (transformA.box.x + transformA.box.w / 2.f > transformB.box.x + transformB.box.w / 2.f) {
                     resolveCollision(registry, e2, e1);
                 } else {
@@ -58,7 +58,7 @@ void collision(entt::registry &registry) {
                 }
             }
         }
-    }
+    }*/
 }
 
 }

@@ -5,17 +5,22 @@ namespace ecs {
 
 void render(entt::registry& registry, SDL& sdl) {
     // TODO: Might need to handle render order
-    auto spriteRenderables = registry.view<ecs::Transform, ecs::Sprite>();
-    for (auto [e, transform, sprite] : spriteRenderables.each()) {
-        sprite.animation->render(transform.box);
+    auto spriteRenderables = registry.view<ecs::Position, ecs::Sprite>();
+    for (auto [e, position, sprite] : spriteRenderables.each()) {
+        sprite.animation->render(position.x, position.y, sprite.scale);
     }
 
-    auto shapeRenderables = registry.view<ecs::Transform, ecs::Shape>();
-    for (auto [e, transform, shape] : shapeRenderables.each()) {
+    auto shapeRenderables = registry.view<ecs::Position, ecs::Rectangle>();
+    for (auto [e, position, shape] : shapeRenderables.each()) {
+        SDL_FRect dstRect = {
+            position.x, position.y,
+            shape.width, shape.height
+        };
+
         sdl.setColor(shape.outlineColor);
-        sdl.drawRect(transform.box);
+        sdl.drawRect(dstRect);
         sdl.setColor(shape.fillColor);
-        sdl.drawRectFilled(transform.box);
+        sdl.drawRectFilled(dstRect);
     }
 }
 

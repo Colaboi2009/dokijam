@@ -39,10 +39,10 @@ void asyncInput(entt::registry &registry, const entt::entity &player) {
 
 // Let's leave this here for now
 void movement(entt::registry &registry, const double dt) {
-    auto view = registry.view<ecs::Transform, ecs::Velocity>();
+    auto view = registry.view<ecs::Position, ecs::Velocity>();
     for (auto [e, position, velocity] : view.each()) {
-        position.box.x += velocity.dx * dt;
-        position.box.y += velocity.dy * dt;
+        position.x += velocity.dx * dt;
+        position.y += velocity.dy * dt;
     }
 }
 

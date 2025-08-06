@@ -10,7 +10,7 @@ class SDL;
 namespace ecs {
 
 // Systems
-void cleanup(entt::registry &registry);
+void cleanup(entt::registry &registry, const double dt);
 void spawn(entt::registry &registry);
 void asyncInput(entt::registry &registry, const entt::entity &player);
 void syncInput(entt::registry &registry, const entt::entity &player, SDL_Event& event);

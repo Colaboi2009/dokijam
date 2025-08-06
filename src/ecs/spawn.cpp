@@ -2,11 +2,12 @@
 
 namespace ecs {
 
-void cleanup(entt::registry &registry) {
+void cleanup(entt::registry &registry, const double dt) {
     auto view = registry.view<ecs::JustDieAfter>();
     for (auto [e, dieAfter] : view.each()) {
-        uint64_t now = SDL_GetTicks();
-        if (now - dieAfter.createdAt >= dieAfter.msToLive) {
+        //uint64_t now = SDL_GetTicks();
+        dieAfter.msToLive -= dt;
+        if (dieAfter.msToLive <= 0) {
             bool hasExplosion = registry.any_of<ecs::Explosion>(e);
             if (hasExplosion) {
                 // trigger an explosion and then destroy
@@ -23,8 +24,8 @@ void cleanup(entt::registry &registry) {
 }
 
 void spawn(entt::registry &registry) {
-    auto view = registry.view<ecs::Transform, ecs::Spawner>();
-    for (auto [e, transform, spawner] : view.each()) {
+    auto view = registry.view<ecs::Position, ecs::Spawner>();
+    for (auto [e, position, spawner] : view.each()) {
         // If an entity has an attached spawner, and also has a transform
         // we can create an entity next to it based on the spawner type
 
@@ -41,8 +42,8 @@ void spawn(entt::registry &registry) {
                     float mouseY = 0.0f;
                     SDL_GetMouseState(&mouseX, &mouseY);
 
-                    float dx = mouseX - transform.box.x;
-                    float dy = mouseY - transform.box.y;
+                    float dx = mouseX - position.x;
+                    float dy = mouseY - position.y;
 
                     float length = std::sqrt(dx * dx + dy * dy);
                     if (length == 0) continue;
@@ -52,14 +53,14 @@ void spawn(entt::registry &registry) {
 
                     constexpr float speed = 2.0f;
 
-                    registry.emplace<ecs::Transform>(dragoon, transform.box);
+                    registry.emplace<ecs::Position>(dragoon, position.x, position.y);
                     auto& velocity = registry.emplace<ecs::Velocity>(dragoon);
                     velocity.dx = speed * dx;
                     velocity.dy = speed * dy;
-                    registry.emplace<ecs::Shape>(dragoon, SDL_Color{255, 0, 0, 255});
-                    registry.emplace<ecs::JustDieAfter>(dragoon, SDL_GetTicks(), (rand() % 600) + 500);
+                    registry.emplace<ecs::Rectangle>(dragoon, 10, 10, SDL_Color{255, 0, 0, 255});
+                    registry.emplace<ecs::JustDieAfter>(dragoon, (rand() % 600) + 500);
                     // For fun
-                    registry.emplace<ecs::BoxCollider>(dragoon);
+                    registry.emplace<ecs::BoxCollider>(dragoon, 0, 0, 10, 10);
                     break;
                 }
             }

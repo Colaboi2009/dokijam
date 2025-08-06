@@ -41,5 +41,5 @@ class Animation {
 	void once(int i = 0);
 	void repeat(int i = 0);
 
-    void render(SDL_FRect dst);
+    void render(const float x, const float y, const float scale);
 };
