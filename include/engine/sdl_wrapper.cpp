@@ -7,7 +7,7 @@ SDL::SDL() {
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS | SDL_INIT_AUDIO);
     TTF_Init();
 
-    SDL_CreateWindowAndRenderer("new_sdl",
+    SDL_CreateWindowAndRenderer("DokiJam",
 								1920, 1080, SDL_WINDOW_RESIZABLE, &m_window, &m_renderer);
     SDL_SetRenderVSync(m_renderer, 1);
 
