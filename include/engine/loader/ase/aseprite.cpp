@@ -421,7 +421,6 @@ void aseprite(const std::string filepath, Asefile &f) {
     f.frames.resize(frames);
     for (int i = 0; i < frames; i++) {
         f.framePixels[i] = (uint32_t *)malloc(width * height * sizeof(uint32_t));
-		int pos = 0;
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
 				if (y >= images[i].size() || x >= images[i][y].size()) {
