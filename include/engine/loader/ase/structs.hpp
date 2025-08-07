@@ -94,6 +94,8 @@ struct TileMap {
 };
 
 struct Asefile {
+	// free framePixels after freeing SDL_Surface
+	std::vector<uint32_t *> framePixels;
     std::vector<SDL_Surface *> frames;
     std::vector<word> durations;
     std::vector<std::pair<word, word>> tags;

@@ -49,6 +49,7 @@ void Animation::create_aseprite(std::string filepath) {
     for (int i = 0; i < m_frameCount; i++) {
         m_textures[i].create(f.frames[i]);
         SDL_DestroySurface(f.frames[i]);
+		free(f.framePixels[i]);
         m_delays[i] = f.durations[i];
     }
     for (int i = 0; i < m_tags.size(); i++) {

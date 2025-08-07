@@ -417,21 +417,21 @@ void aseprite(const std::string filepath, Asefile &f) {
         }
     }
 
+	f.framePixels.resize(frames);
     f.frames.resize(frames);
     for (int i = 0; i < frames; i++) {
-        // warn(Skulaurun): This buffer is not managed by SDL, need to free
-        uint32_t *pixels = (uint32_t *)malloc(width * height * sizeof(uint32_t));
+        f.framePixels[i] = (uint32_t *)malloc(width * height * sizeof(uint32_t));
 		int pos = 0;
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
 				if (y >= images[i].size() || x >= images[i][y].size()) {
-					pixels[y * width + x] = 0;
+					f.framePixels[i][y * width + x] = 0;
 				} else {
-					pixels[y * width + x] = images[i][y][x];
+					f.framePixels[i][y * width + x] = images[i][y][x];
 				}
             }
         }
-        f.frames[i] = SDL_CreateSurfaceFrom(width, height, SDL_PIXELFORMAT_RGBA32, pixels, width * 4);
+        f.frames[i] = SDL_CreateSurfaceFrom(width, height, SDL_PIXELFORMAT_RGBA32, f.framePixels[i], width * 4);
     }
 }
 } // namespace loader::ase
