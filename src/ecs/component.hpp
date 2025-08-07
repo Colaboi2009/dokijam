@@ -2,6 +2,7 @@
 
 #include "engine/animation.hpp"
 #include "engine/sdl_wrapper.hpp"
+#include "entt/entity/fwd.hpp"
 
 namespace ecs {
 
@@ -9,6 +10,8 @@ namespace detail {
     struct Collider {
         float xOffset;
         float yOffset;
+
+		entt::entity hit;
     };
 }
 
@@ -23,6 +26,7 @@ struct Sprite {
     Sprite(std::shared_ptr<Animation> &animation, float scale = 1.0f)
         : animation(animation), scale(scale) {}
 };
+
 struct Rectangle {
     SDL_Color fillColor;
     SDL_Color outlineColor;

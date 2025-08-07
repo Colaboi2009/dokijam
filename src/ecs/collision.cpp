@@ -9,6 +9,11 @@ namespace ecs {
 // added this to change the reason why something is movable; a moving platform probably shouldn't be moved by the player
 static bool isMovable(entt::registry &reg, entt::entity e) { return reg.any_of<Velocity>(e); }
 
+static void informCollision(entt::entity e1, detail::Collider c1, entt::entity e2, detail::Collider c2) {
+	c1.hit = e2;
+	c2.hit = e1;
+}
+
 static bool rayVsRect(const Point &ray_origin, const Point &ray_dir, const SDL_FRect &target, SDL_FPoint &contact_point,
                       SDL_FPoint &contact_normal, float &t_hit_near) {
     Point targetPos = {target.x, target.y};
@@ -68,6 +73,11 @@ static void handleBBCollisions(entt::registry &reg, entt::entity e1, entt::entit
     BoxCollider &e2box = reg.get<BoxCollider>(e2);
     SDL_FRect e2rect = {e2pos.x + e2box.xOffset, e2pos.y + e2box.yOffset, e2box.width, e2box.height};
 
+	if (!rectsOverlap(e1rect, e2rect)) {
+		return;
+	} 
+	informCollision(e1, e1box, e2, e2box);
+
     if (isMovable(reg, e1) && !isMovable(reg, e2)) { // !movable vs movable is handled on the duplicate route
         Velocity &e1vel = reg.get<Velocity>(e1);
         SDL_FRect e2expanded = {e2rect.x - e1rect.w / 2, e2rect.y - e1rect.h / 2, e2rect.w + e1rect.w, e2rect.h + e1rect.h};
@@ -114,6 +124,8 @@ static void handleBCCollisions(entt::registry &reg, entt::entity eb, entt::entit
         if (rayVsRect(ecpos, {ecvel.dx * (float)dt, ecvel.dy * (float)dt}, ebexpanded,
                       contact_pos, normal, contact_time) &&
             contact_time < 1.0f && contact_time >= 0.f) {
+			informCollision(eb, ebbox, ec, ecc);
+
             ecvel.dx += normal.x * std::abs(ecvel.dx) * (1 - contact_time);
             ecvel.dy += normal.y * std::abs(ecvel.dy) * (1 - contact_time);
         }
@@ -141,6 +153,8 @@ static void handleCCCollisions(entt::registry &reg, entt::entity e1, entt::entit
         return;
     }
 
+	informCollision(e1, e1cir, e2, e2cir);
+
     Point dir = e2pos - e1pos;
     float length = sqrt(dir.x * dir.x + dir.y * dir.y);
     dir.x /= length;
@@ -157,6 +171,15 @@ static void handleCCCollisions(entt::registry &reg, entt::entity e1, entt::entit
 }
 
 void collision(entt::registry &registry, const double dt) {
+	auto boxColliders = registry.view<BoxCollider>();
+	for (auto [e, col] : boxColliders.each()) {
+		col.hit = entt::null;
+	}
+	auto circleColliders = registry.view<CircleCollider>();
+	for (auto [e, col] : circleColliders.each()) {
+		col.hit = entt::null;
+	}
+
     auto view = registry.view<Position>();
     for (auto [e1, pos1] : view.each()) {
         if (registry.any_of<BoxCollider, CircleCollider>(e1)) {
