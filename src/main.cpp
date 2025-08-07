@@ -15,6 +15,8 @@ int main() {
 	animation->repeat(0);
 
     SP<TileMap> tileMap = std::make_shared<TileMap>("tilemap.aseprite");
+    //tileMap->setLevel("testing");
+    tileMap->setLevel("default");
 
     // We can use ecs::Movable, or we can decide based on ecs::Velocity,
     // if the entity can be moved
@@ -63,7 +65,7 @@ int main() {
         
         ecs::render(registry, sdl);
 
-        tileMap->render(0, Point{100.0f, 100.0f}, 4.0f);
+        tileMap->render(Point{100.0f, 100.0f}, 4.0f);
 
         sdl.present();
     }
