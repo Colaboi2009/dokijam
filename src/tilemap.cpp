@@ -84,11 +84,11 @@ void TileMap::render(const Point position, const float scale) {
     const int32_t w = ts.width * scale;
     const int32_t h = ts.height * scale;
     
-    SDL_FRect dst = { position.x(), position.y(), (float)w, (float)h};
+    SDL_FRect dst = { position.x, position.y, (float)w, (float)h};
 
     std::size_t i = 0;
     for (std::size_t y = 0; y < c.height; y++) {
-        dst.x = position.x();
+        dst.x = position.x;
         for (std::size_t x = 0; x < c.width; x++) {
             uint32_t tileIndex = c.tiles[i++];
             SDL_FRect src = {
