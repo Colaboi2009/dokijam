@@ -120,6 +120,13 @@ void aseprite(const std::string filepath, Asefile &f) {
                     byte opacity = r.rbyte();
                     r.rpadding(3);
                     std::string layerName = r.rstring();
+                    if (layerType == 2) {
+                        dword tilesetIndex = r.rdword();
+                    }
+                    if (flags & 4) {
+                        std::vector<Byte> uuid(16);
+                        r.rdbuf((char *)uuid.data(), 16);
+                    }
                 } break;
                 case 0x2005: {
                     word layerIndex = r.rword();
@@ -151,8 +158,6 @@ void aseprite(const std::string filepath, Asefile &f) {
 							}
                         } break;
                         case 3: {
-                            /* not tested, cuz it doesn't run */
-                            printf("I AM HIDDEN HAHA\n");
                             word w = r.rword();
                             word h = r.rword();
                             word bpt = r.rword();
@@ -161,7 +166,7 @@ void aseprite(const std::string filepath, Asefile &f) {
                             dword maskYFlip = r.rdword();
                             dword maskDFlip = r.rdword();
                             r.rpadding(10);
-                            std::size_t length = chunkSize - std::size_t(6 + 22 + 10);
+                            std::size_t length = chunkPos + chunkSize - r.tell();
                             std::vector<uint8_t> compressed(length);
                             r.rdbuf((char*)compressed.data(), length);
 
@@ -170,7 +175,7 @@ void aseprite(const std::string filepath, Asefile &f) {
                             tilemap.height = h;
                             tilemap.tiles.resize(std::size_t(w) * h);
 
-                            uLongf outSize = tilemap.tiles.size();
+                            uLongf outSize = tilemap.tiles.size() * (bpt / 8);
                             assert(
                                 uncompress((Bytef*)tilemap.tiles.data(), &outSize, compressed.data(), compressed.size()) == Z_OK
                                 && "zlib uncompress failed"
@@ -399,7 +404,8 @@ void aseprite(const std::string filepath, Asefile &f) {
                     if (hasFlag(flags, TileSetFlags::LinkToExternalFile)) {
                         dword externFileId = r.rword();
                         dword externFileTilesetId = r.rdword();
-                    } else if (hasFlag(flags, TileSetFlags::FileIncludesTiles)) {
+                    }
+                    if (hasFlag(flags, TileSetFlags::FileIncludesTiles)) {
                         dword length = r.rdword();
                         const auto [pair, _] = f.tilesets.emplace(tilesetID, std::make_shared<TileSet>());
                         TileSet& tileset = *pair->second;
