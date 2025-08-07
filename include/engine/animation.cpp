@@ -48,13 +48,13 @@ void Animation::create_aseprite(std::string filepath) {
     m_tags.resize(f.tags.size());
     for (int i = 0; i < m_frameCount; i++) {
         m_textures[i].create(f.frames[i]);
-        SDL_DestroySurface(f.frames[i]);
-		free(f.framePixels[i]);
         m_delays[i] = f.durations[i];
     }
     for (int i = 0; i < m_tags.size(); i++) {
         m_tags[i] = f.tags[i].first;
     }
+
+	loader::ase::freeAse(f);
 }
 
 void Animation::stop() { m_playing = false; }

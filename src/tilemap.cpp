@@ -21,6 +21,8 @@ TileMap::TileMap(const std::string& filepath) {
     std::println("s={}", f.tilemaps.size());
 
     // TODO: Load TileMaps (Layers)
+
+	loader::ase::freeAse(f);
 }
 
 void TileMap::render(const uint16_t layerID, const Point position, const float scale) {
@@ -43,7 +45,7 @@ void TileMap::render(const uint16_t layerID, const Point position, const float s
     const int32_t w = ts.width * scale;
     const int32_t h = ts.height * scale;
     
-    SDL_FRect dst = { position.x(), position.y(), w, h};
+    SDL_FRect dst = { position.x(), position.y(), (float)w, (float)h};
 
     std::size_t i = 0;
     for (std::size_t y = 0; y < 4; y++) {
@@ -51,8 +53,8 @@ void TileMap::render(const uint16_t layerID, const Point position, const float s
         for (std::size_t x = 0; x < 4; x++) {
             uint16_t tileIndex = example[i++];
             SDL_FRect src = {
-                0.0f, tileIndex * ts.height,
-                ts.width, ts.height
+                0.0f, (float)tileIndex * ts.height,
+                (float)ts.width, (float)ts.height
             };
             ts.texture->render(src, dst);
             dst.x += w;

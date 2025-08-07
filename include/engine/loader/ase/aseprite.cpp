@@ -24,6 +24,18 @@ bool hasFlag(const T flags, const U x) {
 */
 
 namespace loader::ase {
+void freeAse(Asefile &file) {
+	for (int i = 0; i < file.frames.size(); i++) {
+		SDL_DestroySurface(file.frames[i]);
+		free(file.framePixels[i]);
+	}
+	for (int i = 0; i  < file.tilesets.size(); i++) {
+		for (const auto [key, value] : file.tilesets) {
+			SDL_DestroySurface(value->surface);
+		}
+	}
+}
+
 void aseprite(const std::string filepath, Asefile &f) {
     Reader r{filepath};
 
