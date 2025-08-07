@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <vector>
 #include <memory>
+#include <string>
 #include <unordered_map>
 
 namespace loader::ase {
@@ -89,8 +90,17 @@ struct TileSet {
 struct TileMap {
     int32_t width;
     int32_t height;
-    // ase-file-specs.md: "at the moment it's always 32-bit per tile"
+    word layerIndex;
+    uint32_t tileIDBitmask;
     std::vector<uint32_t> tiles;
+};
+
+struct Layer {
+    std::string name;
+    word type;
+
+    // is this the same dword as tilesetID
+    dword tilesetIndex;
 };
 
 struct Asefile {
@@ -101,5 +111,6 @@ struct Asefile {
     std::vector<std::pair<word, word>> tags;
     std::unordered_map<dword, std::shared_ptr<TileSet>> tilesets;
     std::vector<TileMap> tilemaps;
+    std::vector<Layer> layers;
 };
 } // namespace loader::ase

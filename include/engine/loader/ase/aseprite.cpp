@@ -119,9 +119,13 @@ void aseprite(const std::string filepath, Asefile &f) {
                     word blendMode = r.rword();
                     byte opacity = r.rbyte();
                     r.rpadding(3);
-                    std::string layerName = r.rstring();
+
+                    auto& layer = f.layers.emplace_back();
+                    layer.tilesetIndex = 0;
+                    layer.type = layerType;
+                    layer.name = r.rstring();
                     if (layerType == 2) {
-                        dword tilesetIndex = r.rdword();
+                        layer.tilesetIndex  = r.rdword();
                     }
                     if (flags & 4) {
                         std::vector<Byte> uuid(16);
@@ -160,6 +164,7 @@ void aseprite(const std::string filepath, Asefile &f) {
                         case 3: {
                             word w = r.rword();
                             word h = r.rword();
+                            // ase-file-specs.md: "at the moment it's always 32-bit per tile"
                             word bpt = r.rword();
                             dword maskTileID = r.rdword();
                             dword maskXFlip = r.rdword();
@@ -173,6 +178,8 @@ void aseprite(const std::string filepath, Asefile &f) {
                             TileMap& tilemap = f.tilemaps.emplace_back();
                             tilemap.width = w;
                             tilemap.height = h;
+                            tilemap.tileIDBitmask = maskTileID;
+                            tilemap.layerIndex = layerIndex;
                             tilemap.tiles.resize(std::size_t(w) * h);
 
                             uLongf outSize = tilemap.tiles.size() * (bpt / 8);
