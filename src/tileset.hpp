@@ -1,5 +1,9 @@
 #pragma once
 
+#include <memory>
+#include <vector>
+#include "engine/texture.hpp"
+
 struct TileSet {
     int32_t width;
     int32_t height;
