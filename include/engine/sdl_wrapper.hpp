@@ -36,7 +36,7 @@ class SDL {
 	bool textInputActive() { return SDL_TextInputActive(m_window); }
 
     SDL_Texture *createTextureFromSurface(SDL_Surface *surf) { return SDL_CreateTextureFromSurface(m_renderer, surf); }
-    void renderTexture(SDL_Texture *t, SDL_FRect *src, SDL_FRect *dst) { SDL_RenderTexture(m_renderer, t, src, dst); }
+    void renderTexture(SDL_Texture *t, const SDL_FRect *src, const SDL_FRect *dst) { SDL_RenderTexture(m_renderer, t, src, dst); }
 
 	void showMessageBox(SDL_MessageBoxFlags f, std::string title, std::string text) { SDL_ShowSimpleMessageBox(f, title.c_str(), text.c_str(), m_window); }
 	void error(std::string title, std::string text) { showMessageBox(SDL_MESSAGEBOX_ERROR, title, text); }

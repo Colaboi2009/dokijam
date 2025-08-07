@@ -3,6 +3,9 @@
 #include <SDL3/SDL_render.h>
 #include <cstdint>
 #include <vector>
+#include <memory>
+#include <string>
+#include <unordered_map>
 
 namespace loader::ase {
 using dword = uint32_t;
@@ -76,9 +79,38 @@ struct Frame {
     std::vector<Chunk> chunks;
 };
 
+struct TileSet {
+    int32_t width;
+    int32_t height;
+    std::size_t count;
+    std::vector<uint8_t> pixels;
+    SDL_Surface* surface;
+};
+
+struct TileMap {
+    int32_t width;
+    int32_t height;
+    word layerIndex;
+    uint32_t tileIDBitmask;
+    std::vector<uint32_t> tiles;
+};
+
+struct Layer {
+    std::string name;
+    word type;
+
+    // is this the same dword as tilesetID
+    dword tilesetIndex;
+};
+
 struct Asefile {
+	// free framePixels after freeing SDL_Surface
+	std::vector<uint32_t *> framePixels;
     std::vector<SDL_Surface *> frames;
     std::vector<word> durations;
     std::vector<std::pair<word, word>> tags;
+    std::unordered_map<dword, std::shared_ptr<TileSet>> tilesets;
+    std::vector<TileMap> tilemaps;
+    std::vector<Layer> layers;
 };
 } // namespace loader::ase

@@ -18,6 +18,8 @@ class Reader {
 
 	size_t tell();
 
+    void rdbuf(char* dst, std::size_t length);
+
     byte rbyte();
     word rword();
     dword rdword();

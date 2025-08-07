@@ -10,6 +10,7 @@ void render(entt::registry& registry, SDL& sdl) {
         sprite.animation->render(position.x, position.y, sprite.scale);
     }
 
+    // Debug stuff will always be on top
     auto shapeRenderables = registry.view<ecs::Position, ecs::Rectangle>();
     for (auto [e, position, shape] : shapeRenderables.each()) {
         SDL_FRect dstRect = {

@@ -50,3 +50,7 @@ void Texture::render(Point dst, float scale) {
 	m_w /= scale;
 	m_h /= scale;
 }
+
+void Texture::render(const SDL_FRect& src, const SDL_FRect& dst) {
+    sdl.renderTexture(*m_texture, &src, &dst);
+}

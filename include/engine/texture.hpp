@@ -35,4 +35,6 @@ class Texture {
     void create(SDL_Surface *surf, SDL_ScaleMode = SDL_SCALEMODE_NEAREST);
     void render(SDL_FRect dst);
     void render(Point dst, float scale);
+
+    void render(const SDL_FRect& src, const SDL_FRect& dst);
 };

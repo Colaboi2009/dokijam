@@ -1,8 +1,41 @@
 #include "aseprite.hpp"
+#include "structs.hpp"
 
 #include "reader.hpp"
 
+enum class TileSetFlags : uint8_t {
+    LinkToExternalFile      = 0b000001,
+    FileIncludesTiles       = 0b000010,
+    NewEmptyFormat          = 0b000100,
+    AutoMatchXFlipped       = 0b001000,
+    AutoMatchYFlipped       = 0b010000,
+    AutoMatchDFlipped       = 0b100000
+};
+
+template<typename T, typename U>
+bool hasFlag(const T flags, const U x) {
+    return (flags & static_cast<T>(x)) == static_cast<T>(x);
+}
+
+/*
+    note(Skulaurun):
+    Your checking for flags with ==,
+    works if only one of the flags is set
+*/
+
 namespace loader::ase {
+void freeAse(Asefile &file) {
+	for (int i = 0; i < file.frames.size(); i++) {
+		SDL_DestroySurface(file.frames[i]);
+		free(file.framePixels[i]);
+	}
+	for (int i = 0; i  < file.tilesets.size(); i++) {
+		for (const auto [key, value] : file.tilesets) {
+			SDL_DestroySurface(value->surface);
+		}
+	}
+}
+
 void aseprite(const std::string filepath, Asefile &f) {
     Reader r{filepath};
 
@@ -86,7 +119,18 @@ void aseprite(const std::string filepath, Asefile &f) {
                     word blendMode = r.rword();
                     byte opacity = r.rbyte();
                     r.rpadding(3);
-                    std::string layerName = r.rstring();
+
+                    auto& layer = f.layers.emplace_back();
+                    layer.tilesetIndex = 0;
+                    layer.type = layerType;
+                    layer.name = r.rstring();
+                    if (layerType == 2) {
+                        layer.tilesetIndex  = r.rdword();
+                    }
+                    if (flags & 4) {
+                        std::vector<Byte> uuid(16);
+                        r.rdbuf((char *)uuid.data(), 16);
+                    }
                 } break;
                 case 0x2005: {
                     word layerIndex = r.rword();
@@ -118,6 +162,31 @@ void aseprite(const std::string filepath, Asefile &f) {
 							}
                         } break;
                         case 3: {
+                            word w = r.rword();
+                            word h = r.rword();
+                            // ase-file-specs.md: "at the moment it's always 32-bit per tile"
+                            word bpt = r.rword();
+                            dword maskTileID = r.rdword();
+                            dword maskXFlip = r.rdword();
+                            dword maskYFlip = r.rdword();
+                            dword maskDFlip = r.rdword();
+                            r.rpadding(10);
+                            std::size_t length = chunkPos + chunkSize - r.tell();
+                            std::vector<uint8_t> compressed(length);
+                            r.rdbuf((char*)compressed.data(), length);
+
+                            TileMap& tilemap = f.tilemaps.emplace_back();
+                            tilemap.width = w;
+                            tilemap.height = h;
+                            tilemap.tileIDBitmask = maskTileID;
+                            tilemap.layerIndex = layerIndex;
+                            tilemap.tiles.resize(std::size_t(w) * h);
+
+                            uLongf outSize = tilemap.tiles.size() * (bpt / 8);
+                            assert(
+                                uncompress((Bytef*)tilemap.tiles.data(), &outSize, compressed.data(), compressed.size()) == Z_OK
+                                && "zlib uncompress failed"
+                            );
                         } break;
                     }
                 } break;
@@ -339,31 +408,54 @@ void aseprite(const std::string filepath, Asefile &f) {
                     short baseIndex = r.rshort();
                     r.rpadding(14);
                     std::string tilesetName = r.rstring();
-                    if (flags == 1) {
+                    if (hasFlag(flags, TileSetFlags::LinkToExternalFile)) {
                         dword externFileId = r.rword();
                         dword externFileTilesetId = r.rdword();
-                    } else if (flags == 2) {
+                    }
+                    if (hasFlag(flags, TileSetFlags::FileIncludesTiles)) {
                         dword length = r.rdword();
+                        const auto [pair, _] = f.tilesets.emplace(tilesetID, std::make_shared<TileSet>());
+                        TileSet& tileset = *pair->second;
+                        tileset.width = w;
+                        tileset.height = h;
+                        tileset.count = tileCount;
+                        tileset.pixels.resize(std::size_t(w) * 4 * h * tileCount);
+
+                        std::vector<uint8_t> compressed(length);
+                        r.rdbuf((char*)compressed.data(), length);
+
+                        uLongf outSize = tileset.pixels.size();
+                        assert(
+                            uncompress(tileset.pixels.data(), &outSize, compressed.data(), compressed.size()) == Z_OK
+                            && "zlib uncompress failed"
+                        );
+                        tileset.surface = SDL_CreateSurfaceFrom(
+                            tileset.width,
+                            tileset.height * tileset.count,
+                            SDL_PIXELFORMAT_RGBA32,
+                            tileset.pixels.data(),
+                            tileset.width * 4
+                        );
                     }
                 } break;
             }
         }
     }
 
+	f.framePixels.resize(frames);
     f.frames.resize(frames);
     for (int i = 0; i < frames; i++) {
-        uint32_t *pixels = (uint32_t *)malloc(width * height * sizeof(uint32_t));
-		int pos = 0;
+        f.framePixels[i] = (uint32_t *)malloc(width * height * sizeof(uint32_t));
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
 				if (y >= images[i].size() || x >= images[i][y].size()) {
-					pixels[y * width + x] = 0;
+					f.framePixels[i][y * width + x] = 0;
 				} else {
-					pixels[y * width + x] = images[i][y][x];
+					f.framePixels[i][y * width + x] = images[i][y][x];
 				}
             }
         }
-        f.frames[i] = SDL_CreateSurfaceFrom(width, height, SDL_PIXELFORMAT_RGBA32, pixels, width * 4);
+        f.frames[i] = SDL_CreateSurfaceFrom(width, height, SDL_PIXELFORMAT_RGBA32, f.framePixels[i], width * 4);
     }
 }
 } // namespace loader::ase
