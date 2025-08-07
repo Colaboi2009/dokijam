@@ -12,6 +12,7 @@ using SP = std::shared_ptr<T>;
 
 float square(float);
 float sqrDist(SDL_FPoint, SDL_FPoint);
+float dot(SDL_FPoint, SDL_FPoint);
 SDL_FRect center(SDL_FRect);
 bool pointOnLine(SDL_FPoint p, SDL_FPoint lineStart, SDL_FPoint lineEnd, float lineThickness);
 bool pointInFRect(SDL_FPoint, SDL_FRect);

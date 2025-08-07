@@ -16,9 +16,9 @@ int main() {
     // if the entity can be moved
 
     const entt::entity player = registry.create();
-    registry.emplace<ecs::Position>(player, 800, 500);
+    registry.emplace<ecs::Position>(player, 800, 600);
     registry.emplace<ecs::Velocity>(player);
-    registry.emplace<ecs::BoxCollider>(player, 0, 0, 50, 50);
+    registry.emplace<ecs::CircleCollider>(player, -30, 0, 60);
     registry.emplace<ecs::Sprite>(player, animation, 4);
     registry.emplace<ecs::Spawner>(player, ecs::Spawner::Type::Dragoon);
 
@@ -32,6 +32,10 @@ int main() {
     registry.emplace<ecs::Position>(YOU_CANT_MOVE_ME, 500, 600);
     registry.emplace<ecs::BoxCollider>(YOU_CANT_MOVE_ME, 0, 0, 120, 30);
     registry.emplace<ecs::Rectangle>(YOU_CANT_MOVE_ME, 120, 30, SDL_Color{0, 0, 0, 255});
+
+	const entt::entity CIRCLE = registry.create();
+	registry.emplace<ecs::Position>(CIRCLE, 1000, 600);
+	registry.emplace<ecs::CircleCollider>(CIRCLE, 0, 0, 100);
 
     bool running = true;
     uint64_t lastTime = SDL_GetPerformanceCounter();
@@ -52,7 +56,7 @@ int main() {
         }
 
         ecs::asyncInput(registry, player);
-        ecs::collision(registry);
+        ecs::collision(registry, deltaTime);
         ecs::movement(registry, deltaTime);
         ecs::spawn(registry);
         ecs::cleanup(registry, deltaTime);

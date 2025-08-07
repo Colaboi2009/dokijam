@@ -15,7 +15,7 @@ void spawn(entt::registry &registry);
 void asyncInput(entt::registry &registry, const entt::entity &player);
 void syncInput(entt::registry &registry, const entt::entity &player, SDL_Event& event);
 void movement(entt::registry &registry, const double dt);
-void collision(entt::registry &registry);
+void collision(entt::registry &registry, const double dt);
 
 void render(entt::registry &registry, SDL& sdl);
 

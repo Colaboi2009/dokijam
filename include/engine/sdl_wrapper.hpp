@@ -28,7 +28,7 @@ class SDL {
     void drawRect(SDL_FRect r) { SDL_RenderRect(m_renderer, &r); }
     void drawRectFilled(SDL_FRect r) { SDL_RenderFillRect(m_renderer, &r); }
 
-	void setRenderScale(Point p) { SDL_SetRenderScale(m_renderer, p.x(), p.y()); }
+	void setRenderScale(Point p) { SDL_SetRenderScale(m_renderer, p.x, p.y); }
 	void resetRenderScale() { SDL_SetRenderScale(m_renderer, 1, 1); }
 
 	bool startTextInput() { return SDL_StartTextInput(m_window); }
