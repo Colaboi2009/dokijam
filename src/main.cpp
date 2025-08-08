@@ -4,6 +4,7 @@
 
 #include "tilemap.hpp"
 
+#include <print>
 #include <entt/entt.hpp>
 
 SDL sdl;
@@ -24,7 +25,7 @@ int main() {
     const entt::entity player = registry.create();
     registry.emplace<ecs::Position>(player, 800, 600);
     registry.emplace<ecs::Velocity>(player);
-    registry.emplace<ecs::CircleCollider>(player, -30, 0, 60);
+    //registry.emplace<ecs::CircleCollider>(player, -30, 0, 60);
     registry.emplace<ecs::Sprite>(player, animation, 4);
     registry.emplace<ecs::Spawner>(player, ecs::Spawner::Type::Dragoon);
 
@@ -46,6 +47,21 @@ int main() {
     bool running = true;
     uint64_t lastTime = SDL_GetPerformanceCounter();
 
+	for (int x = 0; x < 15; x++) {
+		for (int y = 0; y < 10; y++) {
+			const entt::entity bomb = registry.create();
+			const int w = 20;
+			const int h = 20;
+			const int spacing = 100;
+			registry.emplace<ecs::Position>(bomb, x * (w + spacing), y * (h + spacing));
+			registry.emplace<ecs::BoxCollider>(bomb, 0, 0, w, h);
+			registry.emplace<ecs::Rectangle>(bomb, w, h, SDL_Color{50, 255, 50, 255});
+			auto &exp = registry.emplace<ecs::Explosion>(bomb);
+			exp.radius = 100;
+			exp.shouldTrigger = false;
+		}
+	}
+
     while (running) {
         uint64_t now = SDL_GetPerformanceCounter();
         double deltaTime = static_cast<double>(now - lastTime) * 1000.0 / SDL_GetPerformanceFrequency();
@@ -62,8 +78,14 @@ int main() {
         }
 
         ecs::asyncInput(registry, player);
+
+		auto begin = beginTimer();
         ecs::collision(registry, deltaTime);
+		float collisionTime = endTimer(begin);
+		std::println("collision time: {}", collisionTime);
+
         ecs::movement(registry, deltaTime);
+		ecs::explosion(registry);
         ecs::spawn(registry);
         ecs::cleanup(registry, deltaTime);
         
