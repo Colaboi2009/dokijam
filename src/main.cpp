@@ -15,6 +15,8 @@ int main() {
     SP<Animation> animation = std::make_shared<Animation>("green_junimo.aseprite");
 	animation->repeat(0);
 
+	Animation explosionAnimation{"dumb_boom.aseprite"};
+
     SP<TileMap> tileMap = std::make_shared<TileMap>("tilemap.aseprite");
     //tileMap->setLevel("testing");
     tileMap->setLevel("default");
@@ -25,7 +27,7 @@ int main() {
     const entt::entity player = registry.create();
     registry.emplace<ecs::Position>(player, 800, 600);
     registry.emplace<ecs::Velocity>(player);
-    //registry.emplace<ecs::CircleCollider>(player, -30, 0, 60);
+    registry.emplace<ecs::CircleCollider>(player, -30, 0, 60);
     registry.emplace<ecs::Sprite>(player, animation, 4);
     registry.emplace<ecs::Spawner>(player, ecs::Spawner::Type::Dragoon);
 
@@ -57,7 +59,7 @@ int main() {
 			registry.emplace<ecs::BoxCollider>(bomb, 0, 0, w, h);
 			registry.emplace<ecs::Rectangle>(bomb, w, h, SDL_Color{50, 255, 50, 255});
 			auto &exp = registry.emplace<ecs::Explosion>(bomb);
-			exp.radius = 100;
+			exp.radius = 100 + w;
 			exp.shouldTrigger = false;
 		}
 	}
@@ -78,20 +80,16 @@ int main() {
         }
 
         ecs::asyncInput(registry, player);
-
-		auto begin = beginTimer();
         ecs::collision(registry, deltaTime);
-		float collisionTime = endTimer(begin);
-		std::println("collision time: {}", collisionTime);
-
         ecs::movement(registry, deltaTime);
-		ecs::explosion(registry);
+		ecs::explosion(registry, explosionAnimation);
         ecs::spawn(registry);
         ecs::cleanup(registry, deltaTime);
         
         ecs::render(registry, sdl);
 
-        tileMap->render(Point{100.0f, 100.0f}, 4.0f);
+		// it was annoying me lol
+        //tileMap->render(Point{100.0f, 100.0f}, 4.0f);
 
         sdl.present();
     }

@@ -11,13 +11,14 @@ static void triggerExplosion(entt::registry &reg, entt::entity e) {
     }
 }
 
-void explosion(entt::registry &reg) {
+void explosion(entt::registry &reg, Animation explosionAnimation) {
     std::vector<entt::entity> to_explode;
 
     auto view = reg.view<Position, Explosion>();
+	auto boxColliders = reg.view<Position, BoxCollider>();
+	auto circleColliders = reg.view<Position, CircleCollider>();
     for (auto [e, pos, exp] : view.each()) {
         if (exp.shouldTrigger) {
-            auto boxColliders = reg.view<Position, BoxCollider>();
             for (auto [entity_box, pos_box, col_box] : boxColliders.each()) {
                 if (e == entity_box) {
                     continue;
@@ -28,7 +29,6 @@ void explosion(entt::registry &reg) {
                 }
             }
 
-            auto circleColliders = reg.view<Position, CircleCollider>();
             for (auto [entity_cir, pos_cir, col_cir] : circleColliders.each()) {
                 if (e == entity_cir) {
                     continue;
@@ -45,7 +45,13 @@ void explosion(entt::registry &reg) {
     }
     for (auto [e, pos, exp] : view.each()) {
         if (exp.shouldTrigger) {
-            // TODO(cola): render an explosion animation
+			entt::entity exp = reg.create();
+			reg.emplace<Position>(exp, pos.x, pos.y);
+			SP<Animation> anim = std::make_shared<Animation>(explosionAnimation);
+			anim->play();
+			reg.emplace<Sprite>(exp, anim, 5);
+			reg.emplace<JustDieAfter>(exp, 1000);
+
             reg.destroy(e);
         }
     }
