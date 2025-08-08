@@ -14,9 +14,9 @@ int main() {
     SP<Animation> animation = std::make_shared<Animation>("green_junimo.aseprite");
 	animation->repeat(0);
 
-    SP<TileMap> tileMap = std::make_shared<TileMap>("tilemap.aseprite");
+    SP<TileMap> tileMapSprite = std::make_shared<TileMap>("tilemap.aseprite");
     //tileMap->setLevel("testing");
-    tileMap->setLevel("default");
+    tileMapSprite->setLevel("default");
 
     // We can use ecs::Movable, or we can decide based on ecs::Velocity,
     // if the entity can be moved
@@ -43,6 +43,11 @@ int main() {
 	registry.emplace<ecs::Position>(CIRCLE, 1000, 600);
 	registry.emplace<ecs::CircleCollider>(CIRCLE, 0, 0, 100);
 
+	const entt::entity tilemap = registry.create();
+	registry.emplace<ecs::Position>(tilemap, 100, 100);
+	registry.emplace<ecs::TileMapSprite>(tilemap, tileMapSprite);
+	registry.emplace<ecs::TileMapCollider>(tilemap);
+
     bool running = true;
     uint64_t lastTime = SDL_GetPerformanceCounter();
 
@@ -68,8 +73,6 @@ int main() {
         ecs::cleanup(registry, deltaTime);
         
         ecs::render(registry, sdl);
-
-        tileMap->render(Point{100.0f, 100.0f}, 4.0f);
 
         sdl.present();
     }

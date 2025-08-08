@@ -44,7 +44,6 @@ TileMap::TileMap(const std::string& filepath) {
             continue;
         }
         std::string name = container.layerName.substr(6);
-
         LevelRef ref = {};
         if (name.ends_with("_collision")) {
             name = name.substr(0, name.size() - 10);
@@ -73,6 +72,14 @@ void TileMap::setLevel(const std::string& levelName) {
     } else {
         // level not found
     }
+}
+
+TileMap::LevelRef TileMap::getLevel(const std::string &levelName) {
+    auto it = levelLookup.find(levelName);
+    if (it != levelLookup.end()) {
+        return it->second;
+    } 
+	return {};
 }
 
 void TileMap::render(const Point position, const float scale) {

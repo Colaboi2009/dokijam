@@ -24,6 +24,7 @@ public:
     TileMap(const std::string& filepath);
 
     void setLevel(const std::string& levelName);
+	LevelRef getLevel(const std::string &levelName);
 
     void render(const Point position, const float scale = 1.0f);
 
