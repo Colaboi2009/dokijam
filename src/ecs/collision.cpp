@@ -73,11 +73,6 @@ static void handleBBCollisions(entt::registry &reg, entt::entity e1, entt::entit
     BoxCollider &e2box = reg.get<BoxCollider>(e2);
     SDL_FRect e2rect = {e2pos.x + e2box.xOffset, e2pos.y + e2box.yOffset, e2box.width, e2box.height};
 
-	if (!rectsOverlap(e1rect, e2rect)) {
-		return;
-	} 
-	informCollision(e1, e1box, e2, e2box);
-
     if (isMovable(reg, e1) && !isMovable(reg, e2)) { // !movable vs movable is handled on the duplicate route
         Velocity &e1vel = reg.get<Velocity>(e1);
         SDL_FRect e2expanded = {e2rect.x - e1rect.w / 2, e2rect.y - e1rect.h / 2, e2rect.w + e1rect.w, e2rect.h + e1rect.h};
@@ -94,6 +89,7 @@ static void handleBBCollisions(entt::registry &reg, entt::entity e1, entt::entit
             contact_time < 1.0f && contact_time >= 0.f) {
             e1vel.dx += normal.x * std::abs(e1vel.dx) * (1 - contact_time);
             e1vel.dy += normal.y * std::abs(e1vel.dy) * (1 - contact_time);
+			informCollision(e1, e1box, e2, e2box);
         }
     } else if (isMovable(reg, e1) && isMovable(reg, e2)) { // which means yes, this runs twice, but thats fineeee
         Velocity &e1vel = reg.get<Velocity>(e1);
