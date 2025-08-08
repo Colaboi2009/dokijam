@@ -173,7 +173,7 @@ static void handleCCCollisions(entt::registry &reg, entt::entity e1, entt::entit
 // may change it later if it become unperformant, but for now, each tile is basically an immovable square
 static void handleTCCollisions(entt::registry &reg, entt::entity et, entt::entity ec, const double dt) {
     Position position = reg.get<Position>(et);
-    TileMap::LevelRef ref = reg.get<TileMapSprite>(et).tilemap->getLevel("def_col");
+    TileMap::LevelRef ref = reg.get<TileMapSprite>(et).tilemap->getLevel("default");
     auto c = ref.collisionLayer;
     // note(cola): im not sure how else to check the width and height of the tiles
     int width = 16;
