@@ -57,6 +57,24 @@ void Animation::create_aseprite(std::string filepath) {
 	loader::ase::freeAse(f);
 }
 
+float Animation::getPlayLength(int tagIndex) {
+	float sum = 0;
+    if (m_tags.size() == 0) {
+		tagIndex = 0;
+		for (int delay : m_delays) {
+			sum += delay;
+		}
+    } else {
+		int start = m_tags[tagIndex];
+		int end = (m_tags.size() == 0 || tagIndex + 1 >= m_tags.size()) ? m_frameCount : m_tags[tagIndex + 1];
+		float sum = 0;
+		for (int i = start; i < end; i++) {
+			sum += m_delays[i];
+		}
+	}
+	return sum;
+}
+
 void Animation::stop() { m_playing = false; }
 
 void Animation::play() { m_playing = true; }

@@ -34,6 +34,8 @@ class Animation {
 	int tagIndex() const { return m_curTagIndex; }
 	std::vector<Texture> &frames() { return m_textures; }
 
+	float getPlayLength(int i = 0);
+
 	void stop();
 	void play();
 	void restart();

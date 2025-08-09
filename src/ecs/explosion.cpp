@@ -63,7 +63,7 @@ void explosion(entt::registry &reg, Animation explosionAnimation) {
             SP<Animation> anim = std::make_shared<Animation>(explosionAnimation);
             anim->play();
             reg.emplace<Sprite>(exp, anim, 5);
-            reg.emplace<JustDieAfter>(exp, 1000);
+            reg.emplace<JustDieAfter>(exp, anim->getPlayLength());
 
             reg.destroy(e);
         }
