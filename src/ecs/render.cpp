@@ -26,7 +26,7 @@ void render(entt::registry& registry, SDL& sdl) {
 
 	auto tileMaps = registry.view<ecs::Position, ecs::TileMapSprite>();
 	for (auto [e, pos, tilemap] : tileMaps.each()) {
-        tilemap.tilemap->render(Point{pos.x, pos.y}, 4.0f);
+        tilemap.tilemap->render(Point{pos.x, pos.y}, tilemap.scale);
 	}
 }
 

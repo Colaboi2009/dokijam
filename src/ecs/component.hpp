@@ -95,9 +95,11 @@ struct TileMapCollider : public detail::Collider {
 };
 
 struct TileMapSprite {
+    float scale;
 	SP<TileMap> tilemap;
 
-	TileMapSprite(SP<TileMap> tm) : tilemap{tm} {}
+	TileMapSprite(SP<TileMap> tm, const float scale)
+        : tilemap(tm), scale(scale) {}
 };
 
 struct AttackTarget {};

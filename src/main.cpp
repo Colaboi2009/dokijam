@@ -45,8 +45,8 @@ int main() {
 
 	const entt::entity tilemap = registry.create();
 	registry.emplace<ecs::Position>(tilemap, 100, 100);
-	registry.emplace<ecs::TileMapSprite>(tilemap, tileMapSprite);
-	registry.emplace<ecs::TileMapCollider>(tilemap);
+	registry.emplace<ecs::TileMapSprite>(tilemap, tileMapSprite, 4.0f);
+    registry.emplace<ecs::TileMapCollider>(tilemap);
 
     bool running = true;
     uint64_t lastTime = SDL_GetPerformanceCounter();

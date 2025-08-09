@@ -1,24 +1,25 @@
 #pragma once
 
+#include "engine/sdl_wrapper.hpp"
+#include "engine/texture.hpp"
+#include "tileset.hpp"
+
+#include <entt/entt.hpp>
+
 #include <string>
 #include <memory>
 #include <array>
 #include <map>
 #include <unordered_map>
 
-#include "engine/texture.hpp"
-#include "tileset.hpp"
-
-#include <engine/sdl_wrapper.hpp>
-
 class TileMap {
 
 public:
     struct LevelRef {
+        std::pair<TileMapContainer*, TileSet*> collisionLayer;
         std::map<std::size_t, std::pair<TileMapContainer*, TileSet*>> imageLayers;
-        //TileMapContainer* imageLayer;
-        //TileSet* imageTileSet;
-        TileMapContainer* collisionLayer;
+
+        LevelRef() : collisionLayer({nullptr, nullptr}) {}
     };
 
 public:

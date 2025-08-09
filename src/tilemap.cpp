@@ -1,5 +1,5 @@
 #include "tilemap.hpp"
-
+#include "ecs/ecs.hpp"
 #include "engine/loader/ase/aseprite.hpp"
 
 #include <print>
@@ -7,7 +7,7 @@
 #include <optional>
 
 enum class LayerType {
-    Image, Collision
+    Unknown, Image, Collision
 };
 
 struct LayerInfo {
@@ -82,20 +82,24 @@ TileMap::TileMap(const std::string& filepath) {
         if (infoOpt.has_value()) {
             LayerInfo& info = infoOpt.value();
             LevelRef ref = getLevel(info.levelName);
-            if (info.type == LayerType::Collision) {
-                ref.collisionLayer = &container;
-                levelLookup[info.levelName] = ref;
-            } else if (info.type == LayerType::Image) {
-                const std::size_t tileSetID = container.tileSetIndex;
 
+            const std::size_t tileSetID = container.tileSetIndex;
                 auto it = tileSets.find(tileSetID);
-                if (it != tileSets.end()) {
+            if (it == tileSets.end()) {
+                continue;
+            }
+
+            if (info.type == LayerType::Collision) {
+                ref.collisionLayer = { &container, &it->second };
+            } else if (info.type == LayerType::Image) {
                     ref.imageLayers[value.layerIndex] = { &container, &it->second };
+            } else {
+                continue;
                 }
+
                 levelLookup[info.levelName] = ref;
             }
         }
-    }
 
 	loader::ase::freeAse(f);
 }
@@ -129,7 +133,7 @@ void TileMap::render(const Point position, const float scale) {
         const int32_t x = position.x + c.xOffset * scale;
         const int32_t y = position.y + c.yOffset * scale;
 
-        SDL_FRect dst = { x, y, (float)w, (float)h};
+        SDL_FRect dst = { x, y, (float)w, (float)h };
 
         std::size_t i = 0;
         for (std::size_t y = 0; y < c.height; y++) {
