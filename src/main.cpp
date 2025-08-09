@@ -15,7 +15,7 @@ int main() {
     SP<Animation> animation = std::make_shared<Animation>("green_junimo.aseprite");
 	animation->repeat(0);
 
-	//Animation explosionAnimation{"dumb_boom.aseprite"};
+	Animation explosionAnimation{"dumb_boom.aseprite"};
 
     SP<TileMap> tileMap = std::make_shared<TileMap>("tilemap.aseprite");
     //tileMap->setLevel("testing");
@@ -96,7 +96,7 @@ int main() {
         ecs::asyncInput(registry, player);
         ecs::collision(registry, deltaTime);
         ecs::movement(registry, deltaTime);
-		//ecs::explosion(registry, explosionAnimation);
+		ecs::explosion(registry, explosionAnimation);
         ecs::spawn(registry);
         ecs::cleanup(registry, deltaTime);
         
