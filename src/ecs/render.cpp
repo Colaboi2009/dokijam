@@ -23,6 +23,11 @@ void render(entt::registry& registry, SDL& sdl) {
         sdl.setColor(shape.fillColor);
         sdl.drawRectFilled(dstRect);
     }
+
+	auto tileMaps = registry.view<ecs::Position, ecs::TileMapSprite>();
+	for (auto [e, pos, tilemap] : tileMaps.each()) {
+        tilemap.tilemap->render(Point{pos.x, pos.y}, tilemap.scale);
+	}
 }
 
 }

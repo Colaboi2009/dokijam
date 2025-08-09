@@ -3,6 +3,8 @@
 #include "engine/animation.hpp"
 #include "engine/sdl_wrapper.hpp"
 #include "entt/entity/fwd.hpp"
+#include "tilemap.hpp"
+#include "utility.hpp"
 
 namespace ecs {
 
@@ -87,6 +89,17 @@ struct CircleCollider : public detail::Collider {
 
     CircleCollider(const float x, const float y, const float r)
         : detail::Collider({x, y}), radius(r) {}
+};
+
+struct TileMapCollider : public detail::Collider {
+};
+
+struct TileMapSprite {
+    float scale;
+	SP<TileMap> tilemap;
+
+	TileMapSprite(SP<TileMap> tm, const float scale)
+        : tilemap(tm), scale(scale) {}
 };
 
 struct AttackTarget {};

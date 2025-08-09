@@ -18,7 +18,7 @@ int main() {
 	Animation explosionAnimation{"dumb_boom.aseprite"};
 
     SP<TileMap> tileMap = std::make_shared<TileMap>("tilemap.aseprite");
-    //tileMap->setLevel("testing");
+    //tileMapSprite->setLevel("testing");
     tileMap->setLevel("default");
 
     // We can use ecs::Movable, or we can decide based on ecs::Velocity,
@@ -45,6 +45,11 @@ int main() {
 	const entt::entity CIRCLE = registry.create();
 	registry.emplace<ecs::Position>(CIRCLE, 1000, 600);
 	registry.emplace<ecs::CircleCollider>(CIRCLE, 0, 0, 100);
+
+	const entt::entity tilemap = registry.create();
+	registry.emplace<ecs::Position>(tilemap, 100, 100);
+	registry.emplace<ecs::TileMapSprite>(tilemap, tileMapSprite, 4.0f);
+    registry.emplace<ecs::TileMapCollider>(tilemap);
 
     bool running = true;
     uint64_t lastTime = SDL_GetPerformanceCounter();
@@ -87,9 +92,6 @@ int main() {
         ecs::cleanup(registry, deltaTime);
         
         ecs::render(registry, sdl);
-
-		// it was annoying me lol
-        //tileMap->render(Point{100.0f, 100.0f}, 4.0f);
 
         sdl.present();
     }

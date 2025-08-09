@@ -76,7 +76,7 @@ static void handleBBCollisions(entt::registry &reg, entt::entity e1, Position &e
 		return;
 	}
 
-    if (isMovable(reg, e1) && !isMovable(reg, e2)) { // !movable vs movable is handled on the duplicate route
+  if (isMovable(reg, e1) && !isMovable(reg, e2)) { // !movable vs movable is handled on the duplicate route
         Velocity &e1vel = reg.get<Velocity>(e1);
 
         if (e1vel.dx == 0 && e1vel.dy == 0) {
@@ -156,6 +156,42 @@ static void handleCCCollisions(entt::registry &reg, entt::entity e1, Position &e
         e1poscomp.y -= dir.y * error;
     }
 }
+
+// may change it later if it become unperformant, but for now, each tile is basically an immovable square
+static void handleTCCollisions(entt::registry &reg, entt::entity et, entt::entity ec, const double dt) {
+    Position position = reg.get<Position>(et);
+    TileMapSprite& tileMapSprite = reg.get<TileMapSprite>(et);
+    TileMap::LevelRef ref = tileMapSprite.tilemap->getLevel("default");
+
+    TileMapContainer& c = *ref.collisionLayer.first;
+    TileSet& ts = *ref.collisionLayer.second;
+    
+    const float scale = tileMapSprite.scale;
+    const int32_t w = ts.width * scale;
+    const int32_t h = ts.height * scale;
+    const int32_t x = position.x + c.xOffset * scale;
+    const int32_t y = position.y + c.yOffset * scale;
+
+    SDL_FRect dst = {position.x, position.y, (float)w, (float)h};
+    std::size_t i = 0;
+    for (std::size_t y = 0; y < c.height; y++) {
+        dst.x = position.x;
+        for (std::size_t x = 0; x < c.width; x++) {
+            uint32_t tileIndex = c.tiles[i++];
+            if (tileIndex != 0) {
+                entt::entity etempTile = reg.create();
+                reg.emplace<Position>(etempTile, dst.x, dst.y);
+                reg.emplace<BoxCollider>(etempTile, 0, 0, w, h);
+                handleBCCollisions(reg, etempTile, ec, dt);
+                reg.destroy(etempTile);
+            }
+            dst.x += w;
+        }
+        dst.y += h;
+    }
+}
+
+static void handleTBCollisions(entt::registry &reg, entt::entity et, entt::entity eb) {}
 
 void collision(entt::registry &registry, const double dt) {
     auto boxColliders = registry.view<BoxCollider>();

@@ -16,6 +16,8 @@ struct TileMapContainer {
 
     int32_t width;
     int32_t height;
+    int32_t xOffset;
+    int32_t yOffset;
     // not needed rn
     //uint32_t tileIDBitmask;
     std::size_t tileSetIndex;
