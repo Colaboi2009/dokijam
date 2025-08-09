@@ -10,7 +10,7 @@ namespace ecs {
 // added this to change the reason why something is movable; a moving platform probably shouldn't be moved by the player
 static bool isMovable(entt::registry &reg, entt::entity e) { return reg.any_of<Velocity>(e); }
 
-static void informCollision(entt::entity e1, detail::Collider c1, entt::entity e2, detail::Collider c2) {
+static void informCollision(entt::entity e1, detail::Collider& c1, entt::entity e2, detail::Collider& c2) {
     c1.hit = e2;
     c2.hit = e1;
 }
