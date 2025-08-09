@@ -178,6 +178,8 @@ void aseprite(const std::string filepath, Asefile &f) {
                             TileMap& tilemap = f.tilemaps.emplace_back();
                             tilemap.width = w;
                             tilemap.height = h;
+                            tilemap.xOffset = xPos;
+                            tilemap.yOffset = yPos;
                             tilemap.tileIDBitmask = maskTileID;
                             tilemap.layerIndex = layerIndex;
                             tilemap.tiles.resize(std::size_t(w) * h);

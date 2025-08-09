@@ -2,6 +2,8 @@
 
 #include <string>
 #include <memory>
+#include <array>
+#include <map>
 #include <unordered_map>
 
 #include "engine/texture.hpp"
@@ -13,10 +15,9 @@ class TileMap {
 
 public:
     struct LevelRef {
-        // should probably be std::shared_ptr,
-        // so we don't need to worry about the std::vector<> reallocating
-        TileMapContainer* imageLayer;
-        TileSet* imageTileSet;
+        std::map<std::size_t, std::pair<TileMapContainer*, TileSet*>> imageLayers;
+        //TileMapContainer* imageLayer;
+        //TileSet* imageTileSet;
         TileMapContainer* collisionLayer;
     };
 
@@ -30,7 +31,7 @@ public:
 
 private:
     std::unordered_map<uint16_t, TileSet> tileSets;
-    std::vector<TileMapContainer> tileMaps;
+    std::array<TileMapContainer, 132> tileMaps;
 
     // warn(Skulaurun):
     // This expects tileSets and tileMaps to never change

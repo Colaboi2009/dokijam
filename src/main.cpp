@@ -15,7 +15,7 @@ int main() {
 	animation->repeat(0);
 
     SP<TileMap> tileMapSprite = std::make_shared<TileMap>("tilemap.aseprite");
-    //tileMap->setLevel("testing");
+    //tileMapSprite->setLevel("testing");
     tileMapSprite->setLevel("default");
 
     // We can use ecs::Movable, or we can decide based on ecs::Velocity,
