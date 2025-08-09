@@ -11,6 +11,8 @@ SDL::SDL() {
 								1920, 1080, SDL_WINDOW_RESIZABLE, &m_window, &m_renderer);
     SDL_SetRenderVSync(m_renderer, 1);
 
+    SDL_SetRenderDrawBlendMode(m_renderer, SDL_BLENDMODE_BLEND);
+
     present();
 }
 
