@@ -28,6 +28,7 @@ public:
     void setLevel(const std::string& levelName);
 	LevelRef getLevel(const std::string &levelName);
 
+    void registerEntities(entt::registry& registry, const Point position, const float scale = 1.0f);
     void render(const Point position, const float scale = 1.0f);
 
 private:
@@ -39,5 +40,7 @@ private:
     // (e.g. runtime insertion/deletion)
     LevelRef ref;
     std::unordered_map<std::string, LevelRef> levelLookup;
+
+    std::vector<entt::entity> entities;
 
 };

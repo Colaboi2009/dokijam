@@ -121,6 +121,43 @@ TileMap::LevelRef TileMap::getLevel(const std::string &levelName) {
 	return {};
 }
 
+void TileMap::registerEntities(entt::registry& registry, const Point position, const float scale) {
+    for (auto& entity : entities) {
+        registry.destroy(entity);
+    }
+
+    // TODO: Connect Connected-Components to Rectangles
+
+    if (!ref.collisionLayer.first || !ref.collisionLayer.second) return;
+    TileMapContainer& c = *ref.collisionLayer.first;
+    TileSet& ts = *ref.collisionLayer.second;
+
+    const int32_t w = ts.width * scale;
+    const int32_t h = ts.height * scale;
+    const int32_t x = position.x + c.xOffset * scale;
+    const int32_t y = position.y + c.yOffset * scale;
+
+    SDL_FRect dst = { x, y, (float)w, (float)h };
+
+    std::size_t i = 0;
+    for (std::size_t y = 0; y < c.height; y++) {
+        dst.x = x;
+        for (std::size_t x = 0; x < c.width; x++) {
+            uint32_t tileIndex = c.tiles[i++];
+
+            if (tileIndex != 0) {
+                entt::entity e = registry.create();
+                registry.emplace<ecs::Position>(e, dst.x, dst.y);
+                registry.emplace<ecs::BoxCollider>(e, 0, 0, dst.w, dst.h);
+                entities.push_back(e);
+            }
+
+            dst.x += w;
+        }
+        dst.y += h;
+    }
+}
+
 void TileMap::render(const Point position, const float scale) {
     for (const auto& [_, value] : ref.imageLayers) {
         if (!value.first || !value.second) return;

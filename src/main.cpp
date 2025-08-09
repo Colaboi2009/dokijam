@@ -15,10 +15,10 @@ int main() {
     SP<Animation> animation = std::make_shared<Animation>("green_junimo.aseprite");
 	animation->repeat(0);
 
-	Animation explosionAnimation{"dumb_boom.aseprite"};
+	//Animation explosionAnimation{"dumb_boom.aseprite"};
 
     SP<TileMap> tileMap = std::make_shared<TileMap>("tilemap.aseprite");
-    //tileMapSprite->setLevel("testing");
+    //tileMap->setLevel("testing");
     tileMap->setLevel("default");
 
     // We can use ecs::Movable, or we can decide based on ecs::Velocity,
@@ -48,8 +48,17 @@ int main() {
 
 	const entt::entity tilemap = registry.create();
 	registry.emplace<ecs::Position>(tilemap, 100, 100);
-	registry.emplace<ecs::TileMapSprite>(tilemap, tileMapSprite, 4.0f);
+	registry.emplace<ecs::TileMapSprite>(tilemap, tileMap, 4.0f);
     registry.emplace<ecs::TileMapCollider>(tilemap);
+
+    // Register TileMap Level-Collider-Entities
+    auto view = registry.view<ecs::Position, ecs::TileMapSprite>();
+    for (const auto& [e, position, tileMapSprite] : view.each()) {
+        tileMapSprite.tilemap->registerEntities(
+            registry, {position.x, position.y},
+            tileMapSprite.scale
+        );
+    }
 
     bool running = true;
     uint64_t lastTime = SDL_GetPerformanceCounter();
@@ -87,7 +96,7 @@ int main() {
         ecs::asyncInput(registry, player);
         ecs::collision(registry, deltaTime);
         ecs::movement(registry, deltaTime);
-		ecs::explosion(registry, explosionAnimation);
+		//ecs::explosion(registry, explosionAnimation);
         ecs::spawn(registry);
         ecs::cleanup(registry, deltaTime);
         
