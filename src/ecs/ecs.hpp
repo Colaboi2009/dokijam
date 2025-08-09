@@ -1,6 +1,7 @@
 #pragma once
 
 #include "component.hpp"
+#include "utility.hpp"
 
 #include <entt/entt.hpp>
 
@@ -12,6 +13,7 @@ namespace ecs {
 // Systems
 void cleanup(entt::registry &registry, const double dt);
 void spawn(entt::registry &registry);
+void explosion(entt::registry &registry, Animation explosionAnimation);
 void asyncInput(entt::registry &registry, const entt::entity &player);
 void syncInput(entt::registry &registry, const entt::entity &player, SDL_Event& event);
 void movement(entt::registry &registry, const double dt);

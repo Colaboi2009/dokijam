@@ -4,6 +4,7 @@
 
 #include "tilemap.hpp"
 
+#include <print>
 #include <entt/entt.hpp>
 
 SDL sdl;
@@ -14,9 +15,11 @@ int main() {
     SP<Animation> animation = std::make_shared<Animation>("green_junimo.aseprite");
 	animation->repeat(0);
 
-    SP<TileMap> tileMapSprite = std::make_shared<TileMap>("tilemap.aseprite");
+	Animation explosionAnimation{"dumb_boom.aseprite"};
+
+    SP<TileMap> tileMap = std::make_shared<TileMap>("tilemap.aseprite");
     //tileMapSprite->setLevel("testing");
-    tileMapSprite->setLevel("default");
+    tileMap->setLevel("default");
 
     // We can use ecs::Movable, or we can decide based on ecs::Velocity,
     // if the entity can be moved
@@ -51,6 +54,21 @@ int main() {
     bool running = true;
     uint64_t lastTime = SDL_GetPerformanceCounter();
 
+	for (int x = 0; x < 15; x++) {
+		for (int y = 0; y < 10; y++) {
+			const entt::entity bomb = registry.create();
+			const int w = 20;
+			const int h = 20;
+			const int spacing = 100;
+			registry.emplace<ecs::Position>(bomb, x * (w + spacing), y * (h + spacing));
+			registry.emplace<ecs::BoxCollider>(bomb, 0, 0, w, h);
+			registry.emplace<ecs::Rectangle>(bomb, w, h, SDL_Color{50, 255, 50, 255});
+			auto &exp = registry.emplace<ecs::Explosion>(bomb);
+			exp.radius = 100 + w;
+			exp.shouldTrigger = false;
+		}
+	}
+
     while (running) {
         uint64_t now = SDL_GetPerformanceCounter();
         double deltaTime = static_cast<double>(now - lastTime) * 1000.0 / SDL_GetPerformanceFrequency();
@@ -69,6 +87,7 @@ int main() {
         ecs::asyncInput(registry, player);
         ecs::collision(registry, deltaTime);
         ecs::movement(registry, deltaTime);
+		ecs::explosion(registry, explosionAnimation);
         ecs::spawn(registry);
         ecs::cleanup(registry, deltaTime);
         

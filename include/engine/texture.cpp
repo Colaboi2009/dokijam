@@ -27,10 +27,11 @@ void Texture::create(SDL_Surface *surf, SDL_ScaleMode scaleMode) {
 void Texture::render(SDL_FRect dst) {
     assert(m_texture != nullptr && "Cannot render a NULL texture!");
 
-    if (dst.x + dst.y + dst.h + dst.w == 0) {
-        sdl.renderTexture(*m_texture, NULL, NULL);
-		return;
-    }
+	// note(cola): well, you should still be able to put something at 0, 0 xddd
+    //if (dst.x + dst.y + dst.h + dst.w == 0) {
+    //    sdl.renderTexture(*m_texture, NULL, NULL);
+	//	return;
+    //}
     
 	if (dst.w + dst.h == 0) {
         dst.w = float(m_w);
