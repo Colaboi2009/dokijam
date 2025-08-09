@@ -1,5 +1,7 @@
 #include "ecs.hpp"
 
+#include "globals.hpp"
+
 namespace ecs {
 
 void cleanup(entt::registry &registry, const double dt) {
@@ -16,6 +18,7 @@ void cleanup(entt::registry &registry, const double dt) {
                 // depends on the performance cost of EnTT views,
                 // but code-organization-wise, it is better to separate to systems
                 // that handle their own logic and nothing more
+				registry.get<ecs::Explosion>(e).shouldTrigger = true;
             } else {
                 registry.destroy(e);
             }
@@ -42,25 +45,41 @@ void spawn(entt::registry &registry) {
                     float mouseY = 0.0f;
                     SDL_GetMouseState(&mouseX, &mouseY);
 
-                    float dx = mouseX - position.x;
-                    float dy = mouseY - position.y;
+					// convert from window to world space
+					entt::entity cameraEntity = registry.view<Camera>().front();
+					Position cameraPosition = registry.get<Position>(cameraEntity);
+					mouseX += cameraPosition.x - sdl.getWindowSize().x / 2.f;
+					mouseY += cameraPosition.y - sdl.getWindowSize().y / 2.f;
+
+                    constexpr float speed = .5f;
+					const int w = 100;
+					const int h = 100;
+
+					// note(cola): should calculate till end of dragoon
+                    float dx = mouseX - position.x - w / 2.f;
+                    float dy = mouseY - position.y - h / 2.f;
 
                     float length = std::sqrt(dx * dx + dy * dy);
                     if (length == 0) continue;
 
-                    dx /= length;
-                    dy /= length;
+					dx /= length;
+					dy /= length;
 
-                    constexpr float speed = 2.0f;
+					// calculate how long it will take to travel to the mouse position
+					// note(cola): this has a little variance due to dt being little bit inconsistent each frame
+					float travelTime = length / speed;
 
                     registry.emplace<ecs::Position>(dragoon, position.x, position.y);
                     auto& velocity = registry.emplace<ecs::Velocity>(dragoon);
                     velocity.dx = speed * dx;
                     velocity.dy = speed * dy;
-                    registry.emplace<ecs::Rectangle>(dragoon, 10, 10, SDL_Color{255, 0, 0, 255});
-                    registry.emplace<ecs::JustDieAfter>(dragoon, (rand() % 600) + 500);
+                    registry.emplace<ecs::Rectangle>(dragoon, w, h, SDL_Color{255, 0, 0, 255});
+                    registry.emplace<ecs::JustDieAfter>(dragoon, travelTime);
                     // For fun
-                    registry.emplace<ecs::BoxCollider>(dragoon, 0, 0, 10, 10);
+                    registry.emplace<ecs::BoxCollider>(dragoon, 0, 0, w, h);
+					auto &exp = registry.emplace<ecs::Explosion>(dragoon);
+					exp.radius = 100;
+					exp.shouldTrigger = false;
                     break;
                 }
             }

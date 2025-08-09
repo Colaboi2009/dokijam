@@ -4,6 +4,7 @@
 
 #include "tilemap.hpp"
 
+#include <print>
 #include <entt/entt.hpp>
 
 SDL sdl;
@@ -13,6 +14,8 @@ int main() {
 
     SP<Animation> animation = std::make_shared<Animation>("green_junimo.aseprite");
 	animation->repeat(0);
+
+	Animation explosionAnimation{"dumb_boom.aseprite"};
 
     SP<TileMap> tileMap = std::make_shared<TileMap>("tilemap.aseprite");
     //tileMap->setLevel("testing");
@@ -27,6 +30,7 @@ int main() {
     registry.emplace<ecs::CircleCollider>(player, -30, 0, 60);
     registry.emplace<ecs::Sprite>(player, animation, 4);
     registry.emplace<ecs::Spawner>(player, ecs::Spawner::Type::Dragoon);
+	registry.emplace<ecs::Camera>(player);
 
     const entt::entity platform = registry.create();
     registry.emplace<ecs::Position>(platform, 300, 800);
@@ -43,8 +47,37 @@ int main() {
 	registry.emplace<ecs::Position>(CIRCLE, 1000, 600);
 	registry.emplace<ecs::CircleCollider>(CIRCLE, 0, 0, 100);
 
+	const entt::entity tilemap = registry.create();
+	registry.emplace<ecs::Position>(tilemap, 100, 100);
+	registry.emplace<ecs::TileMapSprite>(tilemap, tileMap, 4.0f);
+    registry.emplace<ecs::TileMapCollider>(tilemap);
+
+    // Register TileMap Level-Collider-Entities
+    auto view = registry.view<ecs::Position, ecs::TileMapSprite>();
+    for (const auto& [e, position, tileMapSprite] : view.each()) {
+        tileMapSprite.tilemap->registerEntities(
+            registry, {position.x, position.y},
+            tileMapSprite.scale
+        );
+    }
+
     bool running = true;
     uint64_t lastTime = SDL_GetPerformanceCounter();
+
+	for (int x = 0; x < 15; x++) {
+		for (int y = 0; y < 10; y++) {
+			const entt::entity bomb = registry.create();
+			const int w = 20;
+			const int h = 20;
+			const int spacing = 100;
+			registry.emplace<ecs::Position>(bomb, x * (w + spacing), y * (h + spacing));
+			registry.emplace<ecs::BoxCollider>(bomb, 0, 0, w, h);
+			registry.emplace<ecs::Rectangle>(bomb, w, h, SDL_Color{50, 255, 50, 255});
+			auto &exp = registry.emplace<ecs::Explosion>(bomb);
+			exp.radius = 100 + w;
+			exp.shouldTrigger = false;
+		}
+	}
 
     while (running) {
         uint64_t now = SDL_GetPerformanceCounter();
@@ -64,12 +97,11 @@ int main() {
         ecs::asyncInput(registry, player);
         ecs::collision(registry, deltaTime);
         ecs::movement(registry, deltaTime);
+		ecs::explosion(registry, explosionAnimation);
         ecs::spawn(registry);
         ecs::cleanup(registry, deltaTime);
         
         ecs::render(registry, sdl);
-
-        tileMap->render(Point{100.0f, 100.0f}, 4.0f);
 
         sdl.present();
     }

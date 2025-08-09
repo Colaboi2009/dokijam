@@ -19,6 +19,12 @@ class SDL {
     void setColor(SDL_Color c) { SDL_SetRenderDrawColor(m_renderer, c.r, c.g, c.b, c.a); }
     void clear(SDL_Color c) { setColor(c); SDL_RenderClear(m_renderer); }
 
+    SDL_Point getWindowSize() const {
+		int w, h;
+		SDL_GetWindowSize(m_window, &w, &h);
+		return {w, h};
+    }
+
 	void renderDebugText(SDL_FPoint p, std::string str) { SDL_RenderDebugText(m_renderer, p.x, p.y, str.c_str()); }
 
     void drawPoint(SDL_Point p) { SDL_RenderPoint(m_renderer, p.x, p.y); }
