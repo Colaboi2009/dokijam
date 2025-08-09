@@ -1,5 +1,7 @@
 #include "ecs.hpp"
 
+#include "globals.hpp"
+
 namespace ecs {
 
 void cleanup(entt::registry &registry, const double dt) {
@@ -42,6 +44,12 @@ void spawn(entt::registry &registry) {
                     float mouseX = 0.0f;
                     float mouseY = 0.0f;
                     SDL_GetMouseState(&mouseX, &mouseY);
+
+					// convert from window to world space
+					entt::entity cameraEntity = registry.view<Camera>().front();
+					Position cameraPosition = registry.get<Position>(cameraEntity);
+					mouseX += cameraPosition.x - sdl.getWindowSize().x / 2.f;
+					mouseY += cameraPosition.y - sdl.getWindowSize().y / 2.f;
 
                     constexpr float speed = .5f;
 					const int w = 100;

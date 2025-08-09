@@ -21,6 +21,9 @@ namespace detail {
 struct Movable {};
 struct Renderable {}; // anything that has a sprite or shape is renderable anyways
 
+struct Camera {
+};
+
 struct Sprite {
     float scale;
     std::shared_ptr<Animation> animation;
