@@ -30,6 +30,7 @@ int main() {
     registry.emplace<ecs::CircleCollider>(player, -30, 0, 60);
     registry.emplace<ecs::Sprite>(player, animation, 4);
     registry.emplace<ecs::Spawner>(player, ecs::Spawner::Type::Dragoon);
+	registry.emplace<ecs::Camera>(player);
 
     const entt::entity platform = registry.create();
     registry.emplace<ecs::Position>(platform, 300, 800);
