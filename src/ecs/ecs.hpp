@@ -19,6 +19,8 @@ void syncInput(entt::registry &registry, const entt::entity &player, SDL_Event& 
 void movement(entt::registry &registry, const double dt);
 void collision(entt::registry &registry, const double dt);
 
+void heldDragoonMover(entt::registry &registry, const entt::entity &player);
+
 void render(entt::registry &registry, SDL& sdl);
 
 }

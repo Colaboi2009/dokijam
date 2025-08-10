@@ -123,6 +123,7 @@ struct Spawner {
 
     // Set this to true if you want to spawn entities in the current tick
     bool shouldSpawn = false;
+
     // We can also have like a spawn count per tick/update
     //int spawnGroupCount;
     // for spawning like a group of enemies
@@ -156,4 +157,10 @@ struct JustDieAfter {
         : msToLive(msToLive) {}
 };
 
+struct Dragoon {
+};
+
+struct DragoonHolder {
+	entt::entity heldDragoonEntity = entt::null;
+};
 } // namespace ecs

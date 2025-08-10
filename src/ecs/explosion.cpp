@@ -1,21 +1,8 @@
 #include "ecs.hpp"
 #include "utility.hpp"
+#include "ecs_utility.hpp"
 
 namespace ecs {
-
-static SDL_FPoint getColliderCenter(entt::entity e, Position originalPos, auto &boxView, auto &circleView) {
-    SDL_FPoint center = {originalPos.x, originalPos.y}; // make it center of the collider if it exists
-    if (boxView.contains(e)) {
-        auto [_, box] = boxView.get(e);
-        center.x += box.xOffset + box.width / 2.f;
-        center.y += box.yOffset + box.height / 2.f;
-    } else if (circleView.contains(e)) {
-        auto [_, cir] = circleView.get(e);
-        center.x += cir.xOffset;
-        center.y += cir.yOffset;
-    }
-    return center;
-}
 
 void explosion(entt::registry &reg, Animation explosionAnimation) {
     std::vector<entt::entity> to_explode;
@@ -40,7 +27,7 @@ void explosion(entt::registry &reg, Animation explosionAnimation) {
                 if (e == entity_cir) {
                     continue;
                 }
-                const SDL_FPoint center = {pos.x + col_cir.xOffset, pos.y + col_cir.yOffset};
+                const SDL_FPoint center = {pos_cir.x + col_cir.xOffset, pos_cir.y + col_cir.yOffset};
                 if (circlesOverlap(explosion_center, exp.radius, center, col_cir.radius)) {
                     to_explode.push_back(entity_cir);
                 }

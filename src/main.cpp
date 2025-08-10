@@ -27,10 +27,11 @@ int main() {
     const entt::entity player = registry.create();
     registry.emplace<ecs::Position>(player, 800, 600);
     registry.emplace<ecs::Velocity>(player);
-    registry.emplace<ecs::CircleCollider>(player, -30, 0, 60);
+    registry.emplace<ecs::BoxCollider>(player, -30, 0, 60, 60);
     registry.emplace<ecs::Sprite>(player, animation, 4);
     registry.emplace<ecs::Spawner>(player, ecs::Spawner::Type::Dragoon);
 	registry.emplace<ecs::Camera>(player);
+	registry.emplace<ecs::DragoonHolder>(player);
 
     const entt::entity platform = registry.create();
     registry.emplace<ecs::Position>(platform, 300, 800);
@@ -45,7 +46,7 @@ int main() {
 
 	const entt::entity CIRCLE = registry.create();
 	registry.emplace<ecs::Position>(CIRCLE, 1000, 600);
-	registry.emplace<ecs::CircleCollider>(CIRCLE, 0, 0, 100);
+	//registry.emplace<ecs::CircleCollider>(CIRCLE, 0, 0, 100);
 
 	const entt::entity tilemap = registry.create();
 	registry.emplace<ecs::Position>(tilemap, 100, 100);
@@ -64,20 +65,23 @@ int main() {
     bool running = true;
     uint64_t lastTime = SDL_GetPerformanceCounter();
 
-	for (int x = 0; x < 15; x++) {
-		for (int y = 0; y < 10; y++) {
-			const entt::entity bomb = registry.create();
-			const int w = 20;
-			const int h = 20;
+	for (int x = 0; x < 5; x++) {
+		for (int y = 0; y < 5; y++) {
+			const entt::entity dragoon = registry.create();
+			const int w = 50;
+			const int h = 50;
 			const int spacing = 100;
-			registry.emplace<ecs::Position>(bomb, x * (w + spacing), y * (h + spacing));
-			registry.emplace<ecs::BoxCollider>(bomb, 0, 0, w, h);
-			registry.emplace<ecs::Rectangle>(bomb, w, h, SDL_Color{50, 255, 50, 255});
-			auto &exp = registry.emplace<ecs::Explosion>(bomb);
-			exp.radius = 100 + w;
+			registry.emplace<ecs::Position>(dragoon, x * (w + spacing), y * (h + spacing));
+			registry.emplace<ecs::Dragoon>(dragoon);
+			registry.emplace<ecs::CircleCollider>(dragoon, 0, 0, w);
+			registry.emplace<ecs::Rectangle>(dragoon, w, h, SDL_Color{50, 255, 50, 255});
+			auto &exp = registry.emplace<ecs::Explosion>(dragoon);
+			exp.radius = spacing + w / 2.f;
 			exp.shouldTrigger = false;
 		}
 	}
+
+	bool stopInput = false;
 
     while (running) {
         uint64_t now = SDL_GetPerformanceCounter();
@@ -91,10 +95,19 @@ int main() {
             if (e.type == SDL_EVENT_QUIT) {
                 running = false;
             }
-            ecs::syncInput(registry, player, e);
+			if (!stopInput) {
+				ecs::syncInput(registry, player, e);
+			}
         }
 
-        ecs::asyncInput(registry, player);
+		if (!stopInput) {
+			ecs::asyncInput(registry, player);
+		} else {
+			// animation and dialogue
+		}
+
+		ecs::heldDragoonMover(registry, player);
+
         ecs::collision(registry, deltaTime);
         ecs::movement(registry, deltaTime);
 		ecs::explosion(registry, explosionAnimation);
@@ -108,3 +121,4 @@ int main() {
 
     return 0;
 }
+
