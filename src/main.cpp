@@ -33,20 +33,10 @@ int main() {
 	registry.emplace<ecs::Camera>(player);
 	registry.emplace<ecs::DragoonHolder>(player);
 
-    const entt::entity platform = registry.create();
-    registry.emplace<ecs::Position>(platform, 300, 800);
-    registry.emplace<ecs::Velocity>(platform);
-    registry.emplace<ecs::BoxCollider>(platform, 0, 0, 80, 30);
-    registry.emplace<ecs::Rectangle>(platform, 80, 30, SDL_Color{255, 255, 255, 255});
-
-    const entt::entity YOU_CANT_MOVE_ME = registry.create();
-    registry.emplace<ecs::Position>(YOU_CANT_MOVE_ME, 500, 600);
-    registry.emplace<ecs::BoxCollider>(YOU_CANT_MOVE_ME, 0, 0, 120, 30);
-    registry.emplace<ecs::Rectangle>(YOU_CANT_MOVE_ME, 120, 30, SDL_Color{0, 0, 0, 255});
-
-	const entt::entity CIRCLE = registry.create();
-	registry.emplace<ecs::Position>(CIRCLE, 1000, 600);
-	//registry.emplace<ecs::CircleCollider>(CIRCLE, 0, 0, 100);
+	const entt::entity final_bf = registry.create();
+	registry.emplace<ecs::Position>(final_bf, 0, 0);
+	SP<Animation> finalbfbackground = std::make_shared<Animation>("final_bossfight_prototype.aseprite");
+	registry.emplace<ecs::Sprite>(final_bf, finalbfbackground, 4);
 
 	const entt::entity tilemap = registry.create();
 	registry.emplace<ecs::Position>(tilemap, 100, 100);
@@ -61,9 +51,6 @@ int main() {
             tileMapSprite.scale
         );
     }
-
-    bool running = true;
-    uint64_t lastTime = SDL_GetPerformanceCounter();
 
 	for (int x = 0; x < 5; x++) {
 		for (int y = 0; y < 5; y++) {
@@ -82,6 +69,8 @@ int main() {
 	}
 
 	bool stopInput = false;
+    bool running = true;
+    uint64_t lastTime = SDL_GetPerformanceCounter();
 
     while (running) {
         uint64_t now = SDL_GetPerformanceCounter();
