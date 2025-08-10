@@ -35,8 +35,7 @@ int main() {
 
 	const entt::entity final_bf = registry.create();
 	registry.emplace<ecs::Position>(final_bf, 0, 0);
-	SP<Animation> finalbfbackground = std::make_shared<Animation>("final_bossfight_prototype.aseprite");
-	registry.emplace<ecs::Sprite>(final_bf, finalbfbackground, 4);
+	registry.emplace<ecs::Sprite>(final_bf, std::make_shared<Animation>("final_bossfight_prototype.aseprite"), 4);
 
 	const entt::entity tilemap = registry.create();
 	registry.emplace<ecs::Position>(tilemap, 100, 100);

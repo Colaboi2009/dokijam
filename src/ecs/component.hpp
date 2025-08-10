@@ -28,7 +28,7 @@ struct Sprite {
     float scale;
     std::shared_ptr<Animation> animation;
 
-    Sprite(std::shared_ptr<Animation> &animation, float scale = 1.0f)
+    Sprite(std::shared_ptr<Animation> animation, float scale = 1.0f)
         : animation(animation), scale(scale) {}
 };
 
