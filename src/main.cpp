@@ -16,12 +16,16 @@ int main() {
 	srand(time(0));
     entt::registry registry;
 
+	for (int i = 0; i < 10; i++) { // im lazy, just queue it 10 times
+		audio.queueMusic("art/doki_music_caveofancient.wav");
+	}
+
 	TTF_Font *font = TTF_OpenFont("art/sourcecodevf/sourcecodevf.ttf", 64.f);
 
     SP<Animation> animation = std::make_shared<Animation>("doki.aseprite");
 	animation->repeat(0);
 
-	Animation explosionAnimation{"dumb_boom.aseprite"};
+	Animation explosionAnimation{"explosion_real.gif"};
 
     SP<TileMap> tileMap = std::make_shared<TileMap>("tilemap.aseprite");
     tileMap->setLevel("default");
@@ -74,14 +78,13 @@ int main() {
             }
 			if (playerComponent.alive) {
 				ecs::syncInput(registry, player, e);
-			} else {
-				if (e.type == SDL_EVENT_KEY_DOWN) {
-					if (e.key.key == SDLK_R) {
-						restart = true;
-						running = false;
-					} else if (e.key.key == SDLK_W) {
-						showingQuestionScreen = !showingQuestionScreen;
-					}
+			}
+			if (e.type == SDL_EVENT_KEY_DOWN) {
+				if (e.key.key == SDLK_R) {
+					restart = true;
+					running = false;
+				} else if (e.key.key == SDLK_W && !playerComponent.alive) {
+					showingQuestionScreen = !showingQuestionScreen;
 				}
 			}
         }
@@ -120,6 +123,7 @@ int main() {
 				}
 			}
 		}
+
         
         sdl.present();
     }

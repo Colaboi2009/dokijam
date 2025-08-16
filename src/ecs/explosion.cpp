@@ -44,16 +44,16 @@ void explosion(entt::registry &reg, Animation &explosionAnimation, Audio &audio,
 			}
         }
     }
-    for (auto [e, pos, exp] : view.each()) {
-        if (exp.shouldTrigger) {
+    for (auto [e, pos, explosion] : view.each()) {
+        if (explosion.shouldTrigger) {
             SDL_FPoint animation_center = getColliderCenter(e, pos, boxColliders, circleColliders);
 
             entt::entity exp = reg.create();
             reg.emplace<Position>(exp, animation_center.x, animation_center.y);
             SP<Animation> anim = std::make_shared<Animation>(explosionAnimation);
             anim->play();
-            reg.emplace<Sprite>(exp, anim, scale);
-            reg.emplace<JustDieAfter>(exp, anim->getPlayLength());
+            reg.emplace<Sprite>(exp, anim, explosion.radius / 96.f);
+            reg.emplace<JustDieAfter>(exp, anim->getPlayLength() / 2.f);
 
             reg.destroy(e);
 			audio.playSFX("art/sfx/explosion.wav");
