@@ -14,6 +14,11 @@ void bossInit(entt::registry &r, entt::entity player) {
     Spawner &spawner = r.emplace<Spawner>(bossEntity, Spawner::Type::Boss);
     spawner.data = (void *)&bossEntity;
 
+	const float w = 350.f;
+	r.emplace<BoxCollider>(bossEntity, -w / 2.f, -w / 2.f - 15, w, w);
+	r.emplace<Sprite>(bossEntity, std::make_shared<Animation>("dad.aseprite"), .6f);
+
+
     bossComp.shotAnimations = {
         std::make_shared<Animation>("shots/fire_shot.aseprite"),      std::make_shared<Animation>("shots/water_shot.aseprite"),
         std::make_shared<Animation>("shots/ice_shot.aseprite"),       std::make_shared<Animation>("shots/nature_shot.aseprite"),

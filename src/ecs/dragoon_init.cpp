@@ -106,7 +106,7 @@ void riversInit(entt::registry &registry) {
 
 	// Crystal murderers
 	entt::entity cml = registry.create();
-	registry.emplace<Position>(cml, -1, 187);
+	registry.emplace<Position>(cml, -1, 200);
 	registry.emplace<CrystalMurderer>(cml);
 	registry.emplace<Crystal>(cml, CrystalType::lightning);
 	registry.emplace<Explosion>(cml, 2.f, [&registry](entt::entity culprit) {
