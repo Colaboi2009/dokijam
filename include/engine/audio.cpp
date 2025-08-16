@@ -55,7 +55,6 @@ std::tuple<SDL_AudioSpec, Uint8 *, Uint32> Audio::openWav(std::string filepath) 
     SDL_AudioSpec audiospec;
     Uint8 *buf;
     Uint32 len;
-	filepath = "art/music/" + filepath;
     SDL_LoadWAV(filepath.c_str(), &audiospec, &buf, &len);
 	return std::make_tuple(audiospec, buf, len);
 }

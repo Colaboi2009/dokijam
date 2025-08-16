@@ -1,7 +1,6 @@
 #pragma once
 
 #include "texture.hpp"
-#include "point.hpp"
 #include <string>
 #include <vector>
 
@@ -39,6 +38,9 @@ class Animation {
 	void stop();
 	void play();
 	void restart();
+
+	void stepFrame();
+	void setFrame(int i) { m_frame = i; }
 
 	void once(int i = 0);
 	void repeat(int i = 0);

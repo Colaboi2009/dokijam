@@ -1,24 +1,12 @@
 #include "ecs.hpp"
+#include "engine/audio.hpp"
 #include "utility.hpp"
+#include "ecs_utility.hpp"
 
 namespace ecs {
 
-static SDL_FPoint getColliderCenter(entt::entity e, Position originalPos, auto &boxView, auto &circleView) {
-    SDL_FPoint center = {originalPos.x, originalPos.y}; // make it center of the collider if it exists
-    if (boxView.contains(e)) {
-        auto [_, box] = boxView.get(e);
-        center.x += box.xOffset + box.width / 2.f;
-        center.y += box.yOffset + box.height / 2.f;
-    } else if (circleView.contains(e)) {
-        auto [_, cir] = circleView.get(e);
-        center.x += cir.xOffset;
-        center.y += cir.yOffset;
-    }
-    return center;
-}
-
-void explosion(entt::registry &reg, Animation explosionAnimation) {
-    std::vector<entt::entity> to_explode;
+void explosion(entt::registry &reg, Animation &explosionAnimation, Audio &audio, int scale) {
+    std::vector<std::pair<entt::entity, entt::entity>> culprit_exploded;
 
     auto view = reg.view<Position, Explosion>();
     auto boxColliders = reg.view<Position, BoxCollider>();
@@ -32,7 +20,7 @@ void explosion(entt::registry &reg, Animation explosionAnimation) {
                 }
                 const SDL_FRect rect = {pos_box.x + col_box.xOffset, pos_box.y + col_box.yOffset, col_box.width, col_box.height};
                 if (circleInFRect(explosion_center, exp.radius, rect)) {
-                    to_explode.push_back(entity_box);
+                    culprit_exploded.push_back({e, entity_box});
                 }
             }
 
@@ -40,18 +28,20 @@ void explosion(entt::registry &reg, Animation explosionAnimation) {
                 if (e == entity_cir) {
                     continue;
                 }
-                const SDL_FPoint center = {pos.x + col_cir.xOffset, pos.y + col_cir.yOffset};
+                const SDL_FPoint center = {pos_cir.x + col_cir.xOffset, pos_cir.y + col_cir.yOffset};
                 if (circlesOverlap(explosion_center, exp.radius, center, col_cir.radius)) {
-                    to_explode.push_back(entity_cir);
+                    culprit_exploded.push_back({e, entity_cir});
                 }
             }
         }
     }
-    for (auto e : to_explode) {
-        if (reg.any_of<Explosion>(e) && !reg.any_of<JustDieAfter>(e)) {
-            // CHAIN REACTION :D
-            // delay by 100 milliseconds to make it *DRAMATIC*
-            reg.emplace<JustDieAfter>(e, 100);
+    for (auto e : culprit_exploded) {
+        if (Explosion *exp = reg.try_get<Explosion>(e.second)) {
+			if (exp->question(e.first)) {
+				// CHAIN REACTION :D
+				// delay by 100 milliseconds to make it *DRAMATIC*
+				reg.emplace_or_replace<JustDieAfter>(e.second, 100);
+			}
         }
     }
     for (auto [e, pos, exp] : view.each()) {
@@ -62,10 +52,11 @@ void explosion(entt::registry &reg, Animation explosionAnimation) {
             reg.emplace<Position>(exp, animation_center.x, animation_center.y);
             SP<Animation> anim = std::make_shared<Animation>(explosionAnimation);
             anim->play();
-            reg.emplace<Sprite>(exp, anim, 5);
+            reg.emplace<Sprite>(exp, anim, scale);
             reg.emplace<JustDieAfter>(exp, anim->getPlayLength());
 
             reg.destroy(e);
+			audio.playSFX("art/sfx/explosion.wav");
         }
     }
 }

@@ -1,7 +1,5 @@
 #include "ecs.hpp"
-#include "globals.hpp"
 #include "utility.hpp"
-#include <print>
 
 // NOTE: I should probably rename the variables to not have '_' due to naming conventions, but it looks DAMN clean when you do math with
 // them, though function names would look shit with them
@@ -103,19 +101,28 @@ static void handleBCCollisions(entt::registry &reg, entt::entity eb, Position &e
     SDL_FRect ebrect = {ebpos.x + ebbox.xOffset, ebpos.y + ebbox.yOffset, ebbox.width, ebbox.height};
     SDL_FPoint ecpos = {ecposcomp.x + ecc.xOffset, ecposcomp.y + ecc.yOffset};
 
+	if (!reg.any_of<Velocity>(ec)) {
+		return;
+	}
+	Velocity &ecvel = reg.get<Velocity>(ec);
+	SDL_FRect ebexpanded = {ebrect.x - ecc.radius, ebrect.y - ecc.radius, ebrect.w + ecc.radius, ebrect.h + ecc.radius};
+
+	if (ecvel.dx == 0 && ecvel.dy == 0) {
+		return;
+	}
+	SDL_FPoint contact_pos;
+	SDL_FPoint normal;
+	float contact_time;
+	bool hit = rayVsRect(ecpos, {ecvel.dx * (float)dt, ecvel.dy * (float)dt}, ebexpanded, contact_pos, normal, contact_time) &&
+            contact_time < 1.0f && contact_time >= 0.f;
+	
+	if (hit) {
+		ebbox.hit = ec;
+		ecc.hit = eb;
+	}
+
     if (isMovable(reg, ec) && !isMovable(reg, eb)) {
-        Velocity &ecvel = reg.get<Velocity>(ec);
-        SDL_FRect ebexpanded = {ebrect.x - ecc.radius, ebrect.y - ecc.radius, ebrect.w + ecc.radius, ebrect.h + ecc.radius};
-
-        if (ecvel.dx == 0 && ecvel.dy == 0) {
-            return;
-        }
-
-        SDL_FPoint contact_pos;
-        SDL_FPoint normal;
-        float contact_time;
-        if (rayVsRect(ecpos, {ecvel.dx * (float)dt, ecvel.dy * (float)dt}, ebexpanded, contact_pos, normal, contact_time) &&
-            contact_time < 1.0f && contact_time >= 0.f) {
+        if (hit) {
             informCollision(eb, ebbox, ec, ecc);
 
             ecvel.dx += normal.x * std::abs(ecvel.dx) * (1 - contact_time);
@@ -230,6 +237,24 @@ void collision(entt::registry &registry, const double dt) {
 			}
 			handleCCCollisions(registry, e1, e1pos, e1cir, e2, e2pos, e2cir, dt);
 		}
+	}
+}
+
+void forcePlayerWithinBounds(entt::registry &r, entt::entity player) {
+	Position &pos = r.get<Position>(player);
+	float maxX = 1250;
+	float maxY = 800;
+	if (pos.x > maxX) {
+		pos.x = maxX;
+	}
+	if (pos.x < -maxX) {
+		pos.x = -maxX;
+	}
+	if (pos.y > maxY) {
+		pos.y = maxY;
+	}
+	if (pos.y < -maxY) {
+		pos.y = -maxY;
 	}
 }
 

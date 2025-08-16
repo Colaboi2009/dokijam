@@ -1,0 +1,186 @@
+[Random guy voice over - if its your sister, then let her deepen her voice]
+"Arcana"
+[Crystals appear on the screen, orbiting a central point, plain blue sky background]
+"The practice of ripping open your soul
+and letting energy flow out of it."
+[Every line,the screen goes whiter]
+"And of Surviving it
+Of training it 
+Of harvesting it
+Of mastering it..."
+[Screen Fully White]
+"This is a story of one of the many ways it has impacted on the world.."
+
+*this part is probably better with just a black background with Doki's hands and some sfx*
+
+[Upbeat Music,Doki's/Doki like voice - your sister can also voice with either her normal or a higher pitch voice]
+[Pulling gloves on]
+So I heard of a city
+[Loading bullets into gun]
+A hub of arcana and magical practices
+"Bigger monsters"
+Bigger Prices
+And best of all.... Bigger Heists
+[Shows a siloute(sry i cant spell),on a rooftop]
+"So I pool all of my money"
+[3 Coins clincking onto a table.]
+"I Get on a train"
+[Distant train noise]
+"And arrive in the lower ring of pentara/dokiville..."
+[Shows rough city skyline - as a title screen aswell - scroll the buttons up for fun]
+
+[Title Screen]
+Play
+Settings
+Credits
+Help
+
+(When you click play/start)
+[Cuts to empty wallet - black background probably aswell]
+"Andddd, Im Broke"
+[Turns blank]
+Explosion Sound
+[Shows electric dragoon and doki in an alley looking upwards]
+"thats how I got here"
+
+[Dialogue with dragoon - just a single frame difference in the alleyway for each line is enough]
+
+[Doki steals the gift]
+Doki: There goes your gift!
+Dragoon: But I liked it, tho!
+Doki: You like being murdered??
+Dragoon: No, I like gifts! 
+[Doki accidentally drops the gift, a bomb rolls out (just like 2 choppy frames is fine)]
+Dragoon: Uhhhhhh...
+Doki: Well, that just happened.
+Dragoon: Yeah... I wasn’t expecting that either.
+Doki: You’re welcome!
+Dragoon: You’re welcome? For what?
+Doki: For saving your life???
+Dragoon: Hmm... I guess...
+Doki: But still, where’d you get that gift?
+Dragoon: A dog gave it to me. How cute!
+[A look of horror crosses doki's face]
+Doki: Was it Amber by chance???
+Dragoon: Yeah it was cute little daschbund(still cant spell - me neither :D).Now that I think about it though, it had a smug look on its face, or hungry, or both, i dont know.
+Doki: Definitely both, lets go find him.
+Dragoon: Why dont we just follow the trail of fire shards.
+Doki: Thats probably more convenient
+
+They then proceed to walk through a road (for easy drawing) when a gang shows up and you fight them on the road and sidewalk.
+
+[FIGHT]
+The fire shards on the road are deactivated, you must throw the dragoon (which is electric) at the crystals which activates them, creating a chain explosion to kill the gang (the dragoon is immune because dragoon).
+
+They then continue following the trail of fire shards, until they enter a factory.
+
+[Room 1]
+Entrance room
+Clean tiles (extremely simple and bland, no walls needed, just black (tingy bit of one color for character) background instead)
+There is a small place where a receptionist would be but it is abandoned. (simple counter is fine, embed it into the room and just place it on the collider layer)
+Walkway into next room. (again simple and bland, no need for walls)
+[Room 2 {alpha if you can make this like a minute or so long and have a tiny chain reaction related thing to progress}]
+Simple fight, more gang members. 
+Simple shoot a lever, bridge appears (make it the same room)
+[Room 3] 
+The enemies are stronger, having more health.
+If players notice, there is a valve which you can interact with with water, so if you use your dragoon. (just a tiny expansion on what you specifically want, i.e. make it like another minute or so long)
+
+[Room 4 (simplify the logic of this if you can, and make it like a 2 minute long puzzle)]
+You enter but the doors automatically lock behind you.
+The freezer
+Here are alot of crates, each labeled with
+Flammable, toxic or health.
+Breaking them does exactly what it says on the label.
+Here everything has the freezing effect.
+Be being near fire you remove the frozen effect.
+Multiple areas are blocked off by frozen chains and you have to just shoot them
+
+[Room 5 (the animation for the robot should be really simple don't spend much time on it, the dragoons are just in a cage stuck uptop, just recolor the main dragoon to green and blue)]
+You see a cage with 1 water dragoon and one nature dragoon in.
+In this room is also a robot enemy which stands near small river channels to charge water, then it sprays it in the form of ice.
+You have to get it to turn 2 chains across the rooms sides to ice and then lead it under the cell. When you break both chains using the explosion, the cell drops on the robot, killing it.
+If you miss the robot murdurs you violently (like it makes a big explosion as self defense since the dragoons survived which kills you since dragoons are immune).
+And you have to restart from the beginning (its short so yk its not bad).
+
+[Dialogue with the two dragoons]
+Water drag: Thank you, we got caught a few days ago.
+Doki: Why?? What did they want from you???
+Nature Drag: The gang members took us away to some scientists, I think they had a deal of some kind.
+Water Drag: They jabbed me with things and said something about soul extraction"
+Doki: Are there any other dragoons???
+Dragoons: Yes
+Doki: Ok, you can leave now
+Dragoons: "...
+...
+Can I help save them??"
+
+Doki: Sure
+
+Then you enter a science lab area. The floor is back to clean tiles. On screens there are vague dragoon shaped shapes and stuff.
+There is an out of place bookshelf and when you burn it there is a passage behind.
+-> make a little chain reaction related puzzle (like 1 minute) to open the bookshelf)
+
+[Second last room]
+Empty room with signs saying "Keep out" and scary stuff like that on the final door, which is locked.
+(Guess what... YET ANOTHER 1 minute chain reaction related puzzle because why not (make them really quite simple yet satisfying, we need them easy to make, fun to play. Its a hard combination lmao))
+
+[Final room]
+In the center of the room is an armeture that looks like a gun, with 5 different little streams flowing towards it.
+A screen is flickering so you badically do a smaller version of the other puzzle to turn it on, it has a call button on it.
+
+A man starts speaking
+(No dialogue, just sound)
+
+(Patronisingly)
+Hunter, hunter, hunter
+According to my data you arrived in pentara today???
+Came here to steal, for another heist?
+(Slightly angry)
+Just today and you've managed to unravell years of my work.
+(Angrily)
+You STOLE IT ALL AWAY FROM ME
+(Calm again)
+No matter
+
+Do you know the origin of pentara hunter???
+Beacon tower and the rivers of mana flowing into it arent a biproduct of love for magic and willingness to create such a spectacular pain.
+It is the product of Pain and Suffering, Hate and War, almost like your soon to be body.
+(You can almost hear his grin)
+It was a superweapon, a tower of steel meant to erase mountains, but when the cookie crumbled, it was abandoned and covered up.
+Using these dragoons here, I managed to splice their souls and recreate the soul technology that powered it.
+The world will be forced to kneel to my might and I will be able to rewrite society...
+And you WILL NOT mess this up.
+
+(Manic)
+"I"
+"Found it"
+"I"
+"Fixed it
+And today hunter..."
+"you"
+"will die to it"
+The gun activates
+Whirring to life
+(Calm)
+"Adieu" 
+[Start of final fight]
+{change this fight to whatever you want, im leaving your miniboss idea here but you can do whatever you feel, make it like... 3-4 minutes :D, (don't overcomplicate too much)}
+Mutant dragoon thingy which is chained to a single spot.
+
+Attacks
+Chaos Cannon [Powerful wide projectile]
+Can be dodged by hiding behind either chains or a plant construct or using electricity explosion as movement tech.
+Acid armor
+Creates a small ring of slime which can stick to your dragoons or you
+Acid shot
+Phase 2:
+Stomp-kb and causes falling debris
+[Then other moves]
+
+To beat it you have to cut the chains which causes debris to start falling from above.
+Then you get 4 pillars hit by chaos cannon.
+Big piece of debris squashes boss.
+Then 
+Corridor to final room
+Lots of disturbing stuff, evidence of lots of research
