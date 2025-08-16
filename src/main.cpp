@@ -44,8 +44,8 @@ int main() {
 	ecs::bossInit(registry, player);
 
 	const entt::entity floor = registry.create();
-	registry.emplace<ecs::Position>(floor, -1250, -800, 1.f);
-	registry.emplace<ecs::Rectangle>(floor, 2500, 1600, SDL_Color{90, 30, 30, 255});
+	registry.emplace<ecs::Position>(floor, -1250, -700, 1.f);
+	registry.emplace<ecs::Rectangle>(floor, 2500, 1400, SDL_Color{90, 30, 30, 255});
 
     // Register TileMap Level-Collider-Entities (never used lmao)
     auto view = registry.view<ecs::Position, ecs::TileMapSprite>();
