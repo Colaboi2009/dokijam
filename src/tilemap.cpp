@@ -137,7 +137,7 @@ void TileMap::registerEntities(entt::registry& registry, const Point position, c
     const int32_t x = position.x + c.xOffset * scale;
     const int32_t y = position.y + c.yOffset * scale;
 
-    SDL_FRect dst = { x, y, (float)w, (float)h };
+    SDL_FRect dst = { static_cast<float>(x), static_cast<float>(y), (float)w, (float)h };
 
     std::size_t i = 0;
     for (std::size_t y = 0; y < c.height; y++) {
@@ -170,7 +170,7 @@ void TileMap::render(const Point position, const float scale) {
         const int32_t x = position.x + c.xOffset * scale;
         const int32_t y = position.y + c.yOffset * scale;
 
-        SDL_FRect dst = { x, y, (float)w, (float)h };
+        SDL_FRect dst = { static_cast<float>(x), static_cast<float>(y), (float)w, (float)h };
 
         std::size_t i = 0;
         for (std::size_t y = 0; y < c.height; y++) {

@@ -14,8 +14,8 @@ Animation::Animation(std::string filepath) {
     } else if (filepath.contains(".gif")) {
         create_gif(filepath);
     } else {
-		throw std::runtime_error("Failed to open animation, filetype unsupported!");
-	}
+        throw std::runtime_error("Failed to open animation, filetype unsupported!");
+    }
 }
 
 Animation::~Animation() {}
@@ -54,25 +54,25 @@ void Animation::create_aseprite(std::string filepath) {
         m_tags[i] = f.tags[i].first;
     }
 
-	loader::ase::freeAse(f);
+    loader::ase::freeAse(f);
 }
 
 float Animation::getPlayLength(int tagIndex) {
-	float sum = 0;
+    float sum = 0;
     if (m_tags.size() == 0) {
-		tagIndex = 0;
-		for (int delay : m_delays) {
-			sum += delay;
-		}
+        tagIndex = 0;
+        for (int delay : m_delays) {
+            sum += delay;
+        }
     } else {
-		int start = m_tags[tagIndex];
-		int end = (m_tags.size() == 0 || tagIndex + 1 >= m_tags.size()) ? m_frameCount : m_tags[tagIndex + 1];
-		float sum = 0;
-		for (int i = start; i < end; i++) {
-			sum += m_delays[i];
-		}
-	}
-	return sum;
+        int start = m_tags[tagIndex];
+        int end = (m_tags.size() == 0 || tagIndex + 1 >= m_tags.size()) ? m_frameCount : m_tags[tagIndex + 1];
+        float sum = 0;
+        for (int i = start; i < end; i++) {
+            sum += m_delays[i];
+        }
+    }
+    return sum;
 }
 
 void Animation::stop() { m_playing = false; }
@@ -81,9 +81,11 @@ void Animation::play() { m_playing = true; }
 
 void Animation::restart() { m_frame = m_tags.size() == 0 ? 0 : m_tags[m_curTagIndex]; }
 
+void Animation::stepFrame() { m_frame++; m_frame %= m_frameCount; }
+
 void Animation::once(int i) {
     if (i != 0 && m_tags.size() == 0) {
-		i = 0;
+        i = 0;
     }
     m_repeat = false;
     m_curTagIndex = i;
@@ -93,12 +95,15 @@ void Animation::once(int i) {
 
 void Animation::repeat(int i) {
     if (i != 0 && m_tags.size() == 0) {
-		i = 0;
+        i = 0;
     }
     m_repeat = true;
+    play();
+    if (m_curTagIndex == i) {
+        return;
+    }
     m_curTagIndex = i;
     restart();
-    play();
 }
 
 void Animation::render(const float x, const float y, const float scale) {

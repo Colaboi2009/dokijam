@@ -25,5 +25,7 @@ SDL_FPoint getColliderCenter(entt::entity e, Position originalPos, auto &boxView
     return center;
 }
 
+entt::entity copy(entt::registry &r, const entt::entity e);
+
 SDL_FPoint getMousePosition(entt::registry &r);
 }

@@ -27,6 +27,16 @@ SDL_FPoint getColliderCenter(entt::entity e, ecs::Position originalPos, BoxColli
     return center;
 }
 
+entt::entity copy(entt::registry &r, const entt::entity toCopy) {
+	entt::entity copy = r.create();
+	for (auto [e, storage] : r.storage()) {
+		if (storage.contains(toCopy)) {
+			storage.push(copy, storage.value(toCopy));
+		}
+	}
+	return copy;
+}
+
 SDL_FPoint getMousePosition(entt::registry &r) {
 	float mouseX = 0.0f;
 	float mouseY = 0.0f;

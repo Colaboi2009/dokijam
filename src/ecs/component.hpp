@@ -9,27 +9,25 @@
 namespace ecs {
 
 namespace detail {
-    struct Collider {
-        float xOffset;
-        float yOffset;
+struct Collider {
+    float xOffset;
+    float yOffset;
 
-		entt::entity hit;
-    };
-}
+    entt::entity hit;
+};
+} // namespace detail
 
 // not really needed rn
 struct Movable {};
 struct Renderable {}; // anything that has a sprite or shape is renderable anyways
 
-struct Camera {
-};
+struct Camera {};
 
 struct Sprite {
     float scale;
     std::shared_ptr<Animation> animation;
 
-    Sprite(std::shared_ptr<Animation> animation, float scale = 1.0f)
-        : animation(animation), scale(scale) {}
+    Sprite(std::shared_ptr<Animation> animation, float scale = 1.0f) : animation(animation), scale(scale) {}
 };
 
 struct Rectangle {
@@ -39,8 +37,7 @@ struct Rectangle {
     float width = 0.0f;
     float height = 0.0f;
 
-    Rectangle(float width, float height, const SDL_Color &color)
-        : Rectangle(width, height, color, color) {}
+    Rectangle(float width, float height, const SDL_Color &color) : Rectangle(width, height, color, color) {}
     Rectangle(float width, float height, const SDL_Color &fillColor, const SDL_Color &outlineColor)
         : width(width), height(height), fillColor(fillColor), outlineColor(outlineColor) {}
 };
@@ -64,8 +61,6 @@ struct Position {
 struct Velocity {
     float dx = 0.0f;
     float dy = 0.0f;
-
-    Velocity() = default;
 };
 
 struct Health {
@@ -83,36 +78,32 @@ struct BoxCollider : public detail::Collider {
     // note(cola): scale is for the sprite not the box collider,
     // the offset being applied to the collider could make the collision code messier, but if its centralized to only that place might work
 
-    BoxCollider(const float x, const float y, const float w, const float h)
-        : detail::Collider({x, y}), width(w), height(h) {}
+    BoxCollider(const float x, const float y, const float w, const float h) : detail::Collider({x, y}), width(w), height(h) {}
 };
 
 struct CircleCollider : public detail::Collider {
     float radius;
 
-    CircleCollider(const float x, const float y, const float r)
-        : detail::Collider({x, y}), radius(r) {}
+    CircleCollider(const float x, const float y, const float r) : detail::Collider({x, y}), radius(r) {}
 };
 
-struct TileMapCollider : public detail::Collider {
-};
+struct TileMapCollider : public detail::Collider {};
 
 struct TileMapSprite {
     float scale;
-	SP<TileMap> tilemap;
+    SP<TileMap> tilemap;
 
-	TileMapSprite(SP<TileMap> tm, const float scale)
-        : tilemap(tm), scale(scale) {}
+    TileMapSprite(SP<TileMap> tm, const float scale) : tilemap(tm), scale(scale) {}
 };
 
 struct AttackTarget {};
 
 struct Spawner {
-    enum class Type {
-        Dragoon
-    };
+    enum class Type { Dragoon, Boss };
 
     Type type;
+
+    void *data;
 
     // Direction of the spawned entity
     // in case of a dragoon will probably be set to mouse cursor?
@@ -125,21 +116,21 @@ struct Spawner {
     bool shouldSpawn = false;
 
     // We can also have like a spawn count per tick/update
-    //int spawnGroupCount;
+    // int spawnGroupCount;
     // for spawning like a group of enemies
 
     // can also have a magazine property, that would contain the total entities
     // to be spawned (until recharged by a different system)
-    //int magazine;
+    // int magazine;
 
-    Spawner(Type type)
-        : type(type) {}
+    Spawner(Type type) : type(type) {}
 };
 
 // Explosion, can be used by the cleanup system to trigger an explosion when an entity dies
 struct Explosion {
     float radius;
 
+    std::function<bool(entt::entity culprit)> question = [](entt::entity) { return true; };
     // maybe a type = Enemy vs Player,
     // so that enemy explosion don't hurt them?
 
@@ -152,15 +143,67 @@ struct Explosion {
 // Remove the entity after msToLive reaches zero
 struct JustDieAfter {
     int64_t msToLive;
+    int64_t totalAllowedTime;
+    std::function<void(void)> lastMeal; // its a joke... function that gets run when the timer runs out
 
-    JustDieAfter(int64_t msToLive)
-        : msToLive(msToLive) {}
+    JustDieAfter(int64_t allowed, std::function<void(void)> lm = {}) : totalAllowedTime(allowed), msToLive(allowed), lastMeal{lm} {}
 };
 
+struct Player {
+	bool alive = true;
+};
+
+enum class CrystalType { fire, water, ice, nature, lightning };
 struct Dragoon {
+    CrystalType type;
+};
+struct DragoonHolder {
+    entt::entity heldDragoonEntity = entt::null;
+};
+struct CrystalOrigin {
+    CrystalType type;
+    float dx, dy;
+    SP<Animation> crystalAnimation;
+    float msSpawnInterval;
+    float msCrystalLifeTime;
+    float msTimeSinceLastSpawn;
+    bool stop = false;
+};
+struct Crystal {
+    CrystalType type;
+};
+struct CrystalSheild {
+    float timeToEnable;
+    float msLiveTime = 0;
+    bool isOn = false;
+};
+struct CrystalDirectionChanger {
+    float dx;
+    float dy;
+};
+struct CrystalMurderer {};
+struct River {
+	CrystalType type;
+    SP<Animation> normal;
+    SP<Animation> diverged;
+    bool isDiverged = false;
+};
+struct DragoonShot {
+    CrystalType targetType;
 };
 
-struct DragoonHolder {
-	entt::entity heldDragoonEntity = entt::null;
+struct Boss {
+    float shotInterval;
+    float msTimeSinceLastShot = 0;
+    CrystalType thisShotType = (CrystalType)0;
+	bool isSecondPhase = false;
+
+	std::vector<CrystalType> remainingTypes;
+    std::vector<SP<Animation>> shotAnimations; // NO TIME REMAINING, its in the same order as CrystalType for convenience be quiet
+};
+
+struct BossShot {
+    CrystalType type;
+    bool hit = false;
 };
 } // namespace ecs
