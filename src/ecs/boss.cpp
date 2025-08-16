@@ -14,6 +14,26 @@ void bossInit(entt::registry &r, entt::entity player) {
     Spawner &spawner = r.emplace<Spawner>(bossEntity, Spawner::Type::Boss);
     spawner.data = (void *)&bossEntity;
 
+	const float w = 350.f;
+	r.emplace<BoxCollider>(bossEntity, -w / 2.f, -w / 2.f - 15, w, w);
+	r.emplace<Sprite>(bossEntity, std::make_shared<Animation>("dad.aseprite"), .6f);
+
+	entt::entity final_explosion = r.create();
+	r.emplace<Position>(final_explosion, 0, 0);
+	r.emplace<BoxCollider>(final_explosion, -w / 2.f, -w / 2.f - 15, w, w);
+	r.emplace<Explosion>(final_explosion, 750.f, [&r](entt::entity culprit) {
+		if (Crystal *cry = r.try_get<Crystal>(culprit)) {
+			bool shouldDie = cry->type == CrystalType::lightning;
+			if (shouldDie) {
+				r.remove<Sprite>(bossEntity);
+				r.emplace<JustDieAfter>(bossEntity, 1000);
+			}
+			return shouldDie;
+		}
+		return false;
+	});
+
+
     bossComp.shotAnimations = {
         std::make_shared<Animation>("shots/fire_shot.aseprite"),      std::make_shared<Animation>("shots/water_shot.aseprite"),
         std::make_shared<Animation>("shots/ice_shot.aseprite"),       std::make_shared<Animation>("shots/nature_shot.aseprite"),
@@ -95,6 +115,9 @@ static void bossShots(entt::registry &r, Boss &bossComp, entt::entity player) {
 }
 
 bool boss(entt::registry &r, float dt, entt::entity player) {
+	if (!r.valid(bossEntity)) {
+		return true;
+	}
     Boss &bossComponent = r.get<Boss>(bossEntity);
 
     auto originsView = r.view<CrystalOrigin>();

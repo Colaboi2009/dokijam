@@ -243,7 +243,7 @@ void collision(entt::registry &registry, const double dt) {
 void forcePlayerWithinBounds(entt::registry &r, entt::entity player) {
 	Position &pos = r.get<Position>(player);
 	float maxX = 1250;
-	float maxY = 800;
+	float maxY = 700;
 	if (pos.x > maxX) {
 		pos.x = maxX;
 	}
