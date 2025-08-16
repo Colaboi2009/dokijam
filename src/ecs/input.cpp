@@ -93,28 +93,28 @@ void asyncInput(entt::registry &registry, const entt::entity &player) {
 
     bool animationChosen = false;
     float speed = .3f;
-    if (SDL_GetKeyboardState(NULL)[SDL_SCANCODE_F]) {
+    if (SDL_GetKeyboardState(NULL)[SDL_SCANCODE_D]) {
         velocity.dx += speed;
         if (!animationChosen) {
             sprite.animation->repeat(3);
             animationChosen = true;
         }
     }
-    if (SDL_GetKeyboardState(NULL)[SDL_SCANCODE_S]) {
+    if (SDL_GetKeyboardState(NULL)[SDL_SCANCODE_A]) {
         velocity.dx -= speed;
         if (!animationChosen) {
             sprite.animation->repeat(2);
             animationChosen = true;
         }
     }
-    if (SDL_GetKeyboardState(NULL)[SDL_SCANCODE_D]) {
+    if (SDL_GetKeyboardState(NULL)[SDL_SCANCODE_S]) {
         velocity.dy += speed;
         if (!animationChosen) {
             sprite.animation->repeat(0);
             animationChosen = true;
         }
     }
-    if (SDL_GetKeyboardState(NULL)[SDL_SCANCODE_E]) {
+    if (SDL_GetKeyboardState(NULL)[SDL_SCANCODE_W]) {
         velocity.dy -= speed;
         if (!animationChosen) {
             sprite.animation->repeat(1);
