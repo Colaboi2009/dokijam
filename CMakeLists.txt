@@ -22,7 +22,12 @@ add_subdirectory("vendor/SDL_image")
 add_subdirectory("vendor/SDL_ttf")
 add_subdirectory("vendor/entt")
 
-set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${PROJECT_NAME})
+# Emscripten
+# TODO: Add if()
+set_target_properties(${PROJECT_NAME} PROPERTIES
+	OUTPUT_NAME ${PROJECT_NAME}
+	LINK_FLAGS "-sALLOW_MEMORY_GROWTH=1 --preload-file art"
+)
 
 target_link_libraries(${PROJECT_NAME}
 	SDL3::SDL3
