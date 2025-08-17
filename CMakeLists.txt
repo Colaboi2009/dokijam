@@ -13,6 +13,9 @@ add_executable(${PROJECT_NAME} ${sources})
 set(SDL_HAPTIC OFF CACHE BOOL "" FORCE)
 set(SDL_JOYSTICK OFF CACHE BOOL "" FORCE)
 
+# Use bundled SDL3_ttf dependencies (harfbuzz, freetype)
+set(SDLTTF_VENDORED ON CACHE BOOL "" FORCE)
+
 add_subdirectory("vendor/zlib")
 add_subdirectory("vendor/SDL")
 add_subdirectory("vendor/SDL_image")

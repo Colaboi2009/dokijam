@@ -1,4 +1,5 @@
 build/
+build*/
 doki_jam
 .cache/
 .vs
